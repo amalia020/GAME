@@ -1,8 +1,11 @@
 import { useGame } from '../state/store';
 
-/** Cold-open lite: title card → "Enter the Lab" → badge photo. */
+/** The one character for now (badge picker parked until the world looks great). */
+const ONLY_INTERN = 0;
+
+/** Cold-open lite: title card → "Enter the Lab" → straight into the world. */
 export function TitleScreen() {
-  const startBadge = useGame((s) => s.startBadge);
+  const pickIntern = useGame((s) => s.pickIntern);
   return (
     <div className="screen">
       <div className="screen-kicker">Amalia AI Lab</div>
@@ -13,7 +16,7 @@ export function TitleScreen() {
         inside. Clear the departments, recover the fragments, and help it finish
         becoming itself.
       </p>
-      <button className="btn-primary" onClick={startBadge}>
+      <button className="btn-primary" onClick={() => pickIntern(ONLY_INTERN)}>
         ▶ Enter the Lab
       </button>
     </div>
