@@ -1,0 +1,20 @@
+{
+  "name": "amalia-ai-lab",
+  "private": true,
+  "version": "0.0.0",
+  "description": "PROJECT MORPHO — an Amalia AI Lab educational game. Monorepo root.",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter game dev",
+    "build": "pnpm --filter game build",
+    "preview": "pnpm --filter game preview",
+    "test": "pnpm --filter game test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
+  },
+  "packageManager": "pnpm@9.15.9"
+}

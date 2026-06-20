@@ -1,0 +1,50 @@
+:root {
+  --bg-deep: #0a0e1a;
+  --morpho: #38bdf8;
+  --text: #e6edf6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
+}
+
+.app-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+.overlay-panel {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(20, 29, 46, 0.9);
+  border: 1px solid #243046;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 13px;
+  z-index: 10;
+}
+
+.overlay-panel select {
+  background: #0f1626;
+  color: #e6edf6;
+  border: 1px solid #243046;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-family: monospace;
+}

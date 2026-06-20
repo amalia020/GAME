@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@morpho/shared": ["../shared/src/index.ts"],
+      "@morpho/shared/*": ["../shared/src/*"],
+      "@/*": ["./src/*"]
+    },
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src", "vite.config.ts", "../shared/src"]
+}
