@@ -13,18 +13,22 @@
   },
   "dependencies": {
     "@morpho/shared": "workspace:*",
+    "@react-three/drei": "^9",
+    "@react-three/fiber": "^8",
     "pixi.js": "^8.6.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zustand": "^5.0.2",
-    "zod": "^3.24.1"
+    "three": "^0.184.0",
+    "zod": "^3.24.1",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "jsdom": "^25.0.1",
+    "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^25.0.1",
     "typescript": "^5.7.2",
     "vite": "^5.4.11",
     "vitest": "^2.1.8"
