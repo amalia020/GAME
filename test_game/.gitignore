@@ -1,0 +1,9 @@
+# deps / build (also covered by repo root .gitignore)
+node_modules/
+dist/
+.vite/
+.playwright-mcp/
+
+# throwaway verification screenshots at the project root.
+# (keeps ref/ gallery + world_example.png / houses_examples.png references)
+/*.jpeg

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ink Walk</title>
+    <style>
+      html, body, #root { margin: 0; height: 100%; overflow: hidden; background: #82C9C4; }
+      * { box-sizing: border-box; }
+      .hint {
+        position: fixed; left: 16px; bottom: 14px; z-index: 10;
+        font-family: ui-monospace, monospace; font-size: 13px;
+        color: #1A1A22; background: rgba(232,242,236,0.8);
+        padding: 6px 10px; border: 2px solid #1A1A22; border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div class="hint">WASD / arrows to walk</div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
