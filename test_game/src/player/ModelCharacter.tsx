@@ -91,14 +91,14 @@ export function ModelCharacter({
     const want = airborne && rig.clips.jump
       ? rig.clips.jump
       : a < 0.1 ? rig.clips.idle : a < 0.7 ? rig.clips.walk : rig.clips.run;
-    if (want !== currentClip.current) {
-      const prev = actions[currentClip.current];
-      const next = actions[want];
-      if (next) {
-        next.reset().fadeIn(0.18).play();
-        prev?.fadeOut(0.18);
-        currentClip.current = want;
-      }
+    const next = actions[want];
+    // self-healing: switch on change OR restart if the wanted clip isn't actually
+    // running (recovers from HMR / mixer resets that would otherwise leave it gliding)
+    if (next && (want !== currentClip.current || !next.isRunning())) {
+      const prev = currentClip.current ? actions[currentClip.current] : null;
+      next.reset().fadeIn(0.18).play();
+      if (prev && prev !== next) prev.fadeOut(0.18);
+      currentClip.current = want;
     }
     // nudge the locomotion clip's playback so feet match ground speed
     const moving = actions[currentClip.current];
