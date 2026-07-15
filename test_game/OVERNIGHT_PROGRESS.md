@@ -26,7 +26,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 
 ## New requests (queued 2026-07-16, "can be after")
 - [ ] **M9** — NPCs should MOVE: wandering pedestrians in town + the interior NPC animates/moves (not just idle)
-- [ ] **M10** — Gamified UI scaffolding (placeholder buttons now, context later): main menu, learning ROADMAP, GOALS, challenges list
+- [x] **M10** — Gamified UI scaffolding: HUD with Lv/XP strip + Menu/Roadmap/Goals/Challenges buttons + placeholder panels (verified in browser)
 - [ ] **M11** — Town polish: nicer streets + a central PLAZA landmark (fountain/statue) instead of a central house
 - [ ] **M12** — (later) multiplayer with challenges
 
