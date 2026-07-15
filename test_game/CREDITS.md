@@ -14,11 +14,19 @@ explicitly flagged. Placeholders will be replaced by MORPHO's own original art l
 _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 
 ## Characters — KayKit "Character Pack: Adventurers"
-- Files: `public/models/kits/characters/Mage.glb`, `Rogue_Hooded.glb`, `Knight.glb`
+- Files: `public/models/kits/characters/Mage.glb`, `Knight.glb`, `Rogue.glb`,
+  `Rogue_Hooded.glb`, `Barbarian.glb`
 - Author: **Kay Lousberg (KayKit)** · License: **CC0**
 - Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Adventures-1.0
 - Also on itch.io: https://kaylousberg.itch.io/kaykit-adventurers
-- Use: player character (Mage) + spare NPC placeholders. Weapons hidden at runtime.
+- Use: player character (Mage) + NPC placeholders. Weapons hidden at runtime.
+
+## Characters (NPCs) — KayKit "Character Pack: Skeletons"
+- Files: `public/models/kits/characters/Skeleton_Warrior.glb`, `Skeleton_Mage.glb`,
+  `Skeleton_Rogue.glb`
+- Author: **Kay Lousberg (KayKit)** · License: **CC0**
+- Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0
+- Use: NPC variety for the challenge houses (same clip names / rig as Adventurers).
 
 ## Buildings — KayKit "City Builder Bits"
 - Files: `public/models/kits/buildings/building_A..H.gltf` (+ `.bin`) + `citybits_texture.png`
