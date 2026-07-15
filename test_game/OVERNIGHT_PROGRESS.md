@@ -22,7 +22,32 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - [x] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
 - [x] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
 - [x] **M7** — Polish: fixed interior camera (overlooks open-top room); animated central FOUNTAIN (bobbing water, spinning/pulsing spout, flow streams) as the plaza focal point; KayKit streetlights replace plain lamps; procedural wind SWAY on trees/bushes; overhauled interiors (wood floor, cream walls + skirting + trim rail, lit window, framed door, richer KayKit furniture, warm interior light). Verified in browser.
-- [ ] **M8** — Wrap-up + final push
+- [x] **M8** — Wrap-up + final push (this summary)
+
+## ☀️ Morning summary — what's done
+The ink-walk sandbox is now a cohesive KayKit-styled game (branch `AGENTIC-TEST`,
+all pushed to GitHub):
+- **Character**: KayKit Mage wizard, walks/runs with real animation (moonwalk + glide bugs fixed).
+- **World**: colourful KayKit town — 8 houses ringing an **animated central fountain**
+  plaza, KayKit streetlights, benches/hydrants, swaying trees/bushes, painterly sky +
+  soft shadows.
+- **Life**: 5 townsfolk wander the plaza; each house has a resident NPC that paces.
+- **Houses**: all 8 enterable (walk to door → "Enter" → cozy furnished interior with
+  wood floor, trim, lit window, KayKit furniture); talk to the NPC → **dialogue → tasks**
+  overlay (all placeholder, data-driven in `src/content/houses.ts`).
+- **Gamified HUD**: Lv/XP strip + Menu / Roadmap / Goals / Challenges buttons + panels.
+- **IP**: every downloaded asset is CC0 (KayKit / Quaternius), logged in `CREDITS.md`.
+
+## 🔜 Left for next session (your queued asks + nice-to-haves)
+- **Content**: fill real dialogue + tasks in `src/content/houses.ts`; real roadmap/goals/
+  challenge content in `src/ui/Hud.tsx`.
+- **Polish**: fountain water animation is subtle — could add real particles/shader; door
+  lintel glow is a bit strong; furniture has no colliders (player can walk through it);
+  interior camera occasionally close on the back wall.
+- **Cleanup**: remove now-unused `src/player/Npc.tsx`, `public/models/RobotExpressive.glb`,
+  `Soldier.glb` (Soldier flagged in CREDITS as licence-unverified).
+- **M12 (later, deferred by user)**: multiplayer with challenges.
+- Swap in Amalia's own MORPHO 3D art when ready — change one rig url in `characterModel.ts`.
 
 ## New requests (queued 2026-07-16, "can be after")
 - [x] **M9** — NPCs move: WanderNpc (stroll → pause → new target, walk/idle crossfade); 5 town pedestrians + interior NPC paces. Verified moving across frames.
