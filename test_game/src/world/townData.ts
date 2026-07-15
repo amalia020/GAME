@@ -61,6 +61,10 @@ export const PROPS: PropDef[] = [
   { pos: [-6, -13], kind: 'lamp' }, { pos: [6, 13], kind: 'lamp' },
 ];
 
+/** Central plaza landmark (fountain) — the town's focal point. */
+export const PLAZA_POS: [number, number, number] = [0, 0, -4];
+const FOUNTAIN_R = 2.4;
+
 export interface Collider { minX: number; maxX: number; minZ: number; maxZ: number; }
 
 const fromHouse = (h: House): Collider => ({
@@ -81,9 +85,10 @@ export const CAMERA_OCCLUDERS: Collider[] = [
   ...TREES.map((t) => fromCircle(t.pos[0], t.pos[1], 1.2 * t.scale)),
 ];
 
-/** Footprints the player can't walk through (buildings, tree trunks, lamps). */
+/** Footprints the player can't walk through (buildings, tree trunks, lamps, fountain). */
 export const COLLIDERS: Collider[] = [
   ...BUILDING_COLLIDERS,
   ...TREES.map((t) => fromCircle(t.pos[0], t.pos[1], 0.5 * t.scale)),
   ...PROPS.map((p) => fromCircle(p.pos[0], p.pos[1], 0.3)),
+  fromCircle(PLAZA_POS[0], PLAZA_POS[2], FOUNTAIN_R),
 ];

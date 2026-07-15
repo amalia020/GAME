@@ -28,11 +28,12 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 - Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0
 - Use: NPC variety for the challenge houses (same clip names / rig as Adventurers).
 
-## Buildings — KayKit "City Builder Bits"
-- Files: `public/models/kits/buildings/building_A..H.gltf` (+ `.bin`) + `citybits_texture.png`
+## Buildings + street props — KayKit "City Builder Bits"
+- Files: `public/models/kits/buildings/building_A..H.gltf`, `streetlight.gltf`,
+  `bench.gltf`, `firehydrant.gltf`, `trash_A.gltf` (each + `.bin`) + `citybits_texture.png`
 - Author: **Kay Lousberg (KayKit)** · License: **CC0**
 - Source: https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0
-- Use: the town's houses (1 main house + 7 challenge houses).
+- Use: the town's houses (1 main + 7 challenge) + streetlights and street props.
 
 ## Interior furniture — KayKit "Furniture Bits"
 - Files: `public/models/kits/interior/*.gltf` (+ `.bin`) + `furniturebits_texture.png`

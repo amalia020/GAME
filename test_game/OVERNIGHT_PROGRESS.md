@@ -21,7 +21,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - [x] **M4** — Walk-in interior room template + NPC (idle)
 - [x] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
 - [x] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
-- [ ] **M7** — Cohesion + polish pass (interior camera clips walls; streets; central plaza point instead of central house)
+- [x] **M7** — Polish: fixed interior camera (overlooks open-top room); animated central FOUNTAIN (bobbing water, spinning/pulsing spout, flow streams) as the plaza focal point; KayKit streetlights replace plain lamps; procedural wind SWAY on trees/bushes; overhauled interiors (wood floor, cream walls + skirting + trim rail, lit window, framed door, richer KayKit furniture, warm interior light). Verified in browser.
 - [ ] **M8** — Wrap-up + final push
 
 ## New requests (queued 2026-07-16, "can be after")

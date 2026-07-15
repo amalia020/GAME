@@ -1,5 +1,6 @@
-import { InkBox, InkSphere } from './Inked';
+import { InkSphere } from './Inked';
 import { GltfModel } from './GltfModel';
+import { Sway } from './Sway';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { PALETTE } from '../render/toon';
 import { TREES, BUSHES, PROPS, type TreeDef, type BushDef } from './townData';
@@ -7,27 +8,29 @@ import { TREES, BUSHES, PROPS, type TreeDef, type BushDef } from './townData';
 const TREE_SCALE = 1.6;
 const BUSH_SCALE = 1.2;
 
-/** A CC0 kit bush variant, placed + toon-shaded. */
+/** A CC0 kit bush variant, placed + toon-shaded, with a light wind sway. */
 function Bush({ b, i }: { b: BushDef; i: number }) {
   const v = BUSH_VARIANTS[i % BUSH_VARIANTS.length];
   const name = v.names[i % v.names.length];
   return (
-    <GltfModel url={v.url} name={name}
-      position={[b.pos[0], 0, b.pos[1]]}
-      scale={BUSH_SCALE * b.scale}
-      rotation={[0, (i * 2.1) % (Math.PI * 2), 0]} />
+    <group position={[b.pos[0], 0, b.pos[1]]}>
+      <Sway amount={0.04} speed={1.1} phase={i * 1.7}>
+        <GltfModel url={v.url} name={name} scale={BUSH_SCALE * b.scale} rotation={[0, (i * 2.1) % (Math.PI * 2), 0]} />
+      </Sway>
+    </group>
   );
 }
 
-/** A CC0 kit tree variant (rotating tree types for variety). */
+/** A CC0 kit tree variant (rotating tree types for variety), swaying in the wind. */
 function Tree({ t, i }: { t: TreeDef; i: number }) {
   const v = TREE_VARIANTS[i % TREE_VARIANTS.length];
   const name = v.names[(i * 2) % v.names.length];
   return (
-    <GltfModel url={v.url} name={name}
-      position={[t.pos[0], 0, t.pos[1]]}
-      scale={TREE_SCALE * t.scale}
-      rotation={[0, (i * 1.3) % (Math.PI * 2), 0]} />
+    <group position={[t.pos[0], 0, t.pos[1]]}>
+      <Sway amount={0.05} speed={0.8} phase={i * 1.3}>
+        <GltfModel url={v.url} name={name} scale={TREE_SCALE * t.scale} rotation={[0, (i * 1.3) % (Math.PI * 2), 0]} />
+      </Sway>
+    </group>
   );
 }
 
@@ -40,9 +43,10 @@ export function TownSquare() {
       {BUSHES.map((b, i) => <Bush key={`bush${i}`} b={b} i={i} />)}
 
       {PROPS.map((p, i) => (
-        <group key={`p${i}`} position={[p.pos[0], 0, p.pos[1]]}>
-          <InkBox args={[0.2, 3, 0.2]} color={PALETTE.hair} position={[0, 1.5, 0]} />
-          <InkSphere args={[0.4, 10, 8]} color={PALETTE.accentAmber} glow={1.8} position={[0, 3.1, 0]} />
+        <group key={`p${i}`} position={[p.pos[0], 0, p.pos[1]]} rotation={[0, (i * 1.7) % (Math.PI * 2), 0]}>
+          {/* KayKit streetlight + a warm glowing bulb at the lamp head */}
+          <GltfModel url="/models/kits/buildings/streetlight.gltf" scale={3.2} />
+          <InkSphere args={[0.28, 10, 8]} color={PALETTE.accentAmber} glow={2.2} position={[0, 2.95, 0.55]} />
         </group>
       ))}
     </group>
