@@ -18,7 +18,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - [x] **M1** — Download KayKit building/interior/NPC kits + write `CREDITS.md`
 - [x] **M2** — Scene/state system (town ⇄ interior[houseId])
 - [x] **M3** — Replace villas with KayKit buildings + door "Enter" triggers
-- [ ] **M4** — Walk-in interior room template + NPC (idle)
+- [x] **M4** — Walk-in interior room template + NPC (idle)
 - [ ] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
 - [ ] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
 - [ ] **M7** — Cohesion + polish pass

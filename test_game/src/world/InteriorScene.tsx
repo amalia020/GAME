@@ -2,8 +2,11 @@ import { useMemo } from 'react';
 import { makeToon, PALETTE } from '../render/toon';
 import { InkBox } from './Inked';
 import { Player } from '../player/Player';
+import { Npc } from '../player/Npc';
+import { Furniture } from './Furniture';
 import { InteractionManager } from './InteractionManager';
 import { exitToTown } from '../state/location';
+import { NPC_RIGS, type CharacterRig } from '../player/characterModel';
 import type { Collider } from './townData';
 
 /**
@@ -25,7 +28,15 @@ const WALLS: Collider[] = [
   { minX: DOOR_HALF, maxX: R, minZ: R, maxZ: R + WALL_T }, // front-right
 ];
 
-export function InteriorScene({ houseId, accent = PALETTE.accentAmber }: { houseId?: string; accent?: string }) {
+export function InteriorScene({
+  houseId,
+  accent = PALETTE.accentAmber,
+  npcRig = NPC_RIGS.knight,
+}: {
+  houseId?: string;
+  accent?: string;
+  npcRig?: CharacterRig;
+}) {
   const floorMat = useMemo(() => makeToon({ color: PALETTE.cream }), []);
 
   return (
@@ -44,6 +55,20 @@ export function InteriorScene({ houseId, accent = PALETTE.accentAmber }: { house
       <InkBox args={[R - DOOR_HALF, WALL_H, WALL_T]} color={PALETTE.concrete} position={[(R + DOOR_HALF) / 2, WALL_H / 2, R]} />
       {/* glowing lintel over the door so it reads as an exit */}
       <InkBox args={[DOOR_HALF * 2, 0.25, WALL_T]} color={accent} glow={1.6} position={[0, WALL_H - 0.3, R]} />
+
+      {/* --- furnishings (KayKit Furniture Bits) --- */}
+      <Furniture item="rug_rectangle_A" position={[0, 0.02, -1]} />
+      <Furniture item="couch" position={[0, 0, -R + 0.9]} yaw={0} />
+      <Furniture item="table_low" position={[0, 0, -1.6]} />
+      <Furniture item="chair_A" position={[-2.2, 0, -1.4]} yaw={Math.PI / 2} />
+      <Furniture item="chair_A" position={[2.2, 0, -1.4]} yaw={-Math.PI / 2} />
+      <Furniture item="cabinet_medium" position={[-R + 0.7, 0, -3.4]} yaw={Math.PI / 2} />
+      <Furniture item="lamp_standing" position={[-R + 0.8, 0, -R + 0.8]} />
+      <Furniture item="shelf_A_big" position={[R - 0.35, 1.5, -2.5]} yaw={-Math.PI / 2} />
+      <Furniture item="pictureframe_large_A" position={[0, 2.1, -R + 0.25]} />
+
+      {/* the resident NPC, standing by the couch, facing the door/player */}
+      <Npc rig={npcRig} position={[1.6, 0, -3.4]} yaw={Math.PI} />
 
       <Player colliders={WALLS} occluders={WALLS} bound={R - 0.6} camFull={6} spawn={[0, 0, R - 1.5]} />
 
