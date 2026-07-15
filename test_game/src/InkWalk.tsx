@@ -6,6 +6,7 @@ import { InkEffects } from './render/InkEffects';
 import { GradientSky } from './render/GradientSky';
 import { FadeOverlay } from './ui/FadeOverlay';
 import { InteractionPrompt } from './ui/InteractionPrompt';
+import { DialogOverlay } from './ui/DialogOverlay';
 import { useLocation } from './state/location';
 import { HOUSES, houseDoor } from './world/townData';
 
@@ -69,6 +70,7 @@ export function InkWalk() {
       <InkEffects />
     </Canvas>
     <InteractionPrompt />
+    <DialogOverlay />
     <FadeOverlay />
     </>
   );

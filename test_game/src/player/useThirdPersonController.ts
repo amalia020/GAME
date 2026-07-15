@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { useKeys } from '../world/keys';
 import { COLLIDERS, CAMERA_OCCLUDERS, type Collider } from '../world/townData';
 import { playerPos } from '../state/interaction';
+import { isTalking } from '../state/dialog';
 
 const WALK = 4.2;
 const RUN = 8.5;
@@ -98,10 +99,12 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     const k = keys.current;
 
     // ---- horizontal movement (momentum) ----
+    // freeze input while a dialogue is open so the player can't wander off mid-talk
+    const frozen = isTalking();
     const dir = tmp.current.set(
-      (k.r ? 1 : 0) - (k.l ? 1 : 0),
+      frozen ? 0 : (k.r ? 1 : 0) - (k.l ? 1 : 0),
       0,
-      (k.b ? 1 : 0) - (k.f ? 1 : 0),
+      frozen ? 0 : (k.b ? 1 : 0) - (k.f ? 1 : 0),
     );
     const moving = dir.lengthSq() > 0;
     if (moving) dir.normalize();

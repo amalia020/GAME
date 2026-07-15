@@ -19,10 +19,16 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - [x] **M2** — Scene/state system (town ⇄ interior[houseId])
 - [x] **M3** — Replace villas with KayKit buildings + door "Enter" triggers
 - [x] **M4** — Walk-in interior room template + NPC (idle)
-- [ ] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
-- [ ] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
-- [ ] **M7** — Cohesion + polish pass
+- [x] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
+- [x] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
+- [ ] **M7** — Cohesion + polish pass (interior camera clips walls; streets; central plaza point instead of central house)
 - [ ] **M8** — Wrap-up + final push
+
+## New requests (queued 2026-07-16, "can be after")
+- [ ] **M9** — NPCs should MOVE: wandering pedestrians in town + the interior NPC animates/moves (not just idle)
+- [ ] **M10** — Gamified UI scaffolding (placeholder buttons now, context later): main menu, learning ROADMAP, GOALS, challenges list
+- [ ] **M11** — Town polish: nicer streets + a central PLAZA landmark (fountain/statue) instead of a central house
+- [ ] **M12** — (later) multiplayer with challenges
 
 ## Log
 - 2026-07-16 — Loop started. M0 in progress.

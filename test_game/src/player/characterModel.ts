@@ -39,6 +39,7 @@ export const NPC_RIGS: Record<string, CharacterRig> = {
   skeletonWarrior: kaykitRig('/models/kits/characters/Skeleton_Warrior.glb'),
   skeletonMage: kaykitRig('/models/kits/characters/Skeleton_Mage.glb'),
   skeletonRogue: kaykitRig('/models/kits/characters/Skeleton_Rogue.glb'),
+  skeletonMinion: kaykitRig('/models/kits/characters/Skeleton_Minion.glb'),
 };
 
 /**

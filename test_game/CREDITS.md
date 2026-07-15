@@ -23,7 +23,7 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 
 ## Characters (NPCs) — KayKit "Character Pack: Skeletons"
 - Files: `public/models/kits/characters/Skeleton_Warrior.glb`, `Skeleton_Mage.glb`,
-  `Skeleton_Rogue.glb`
+  `Skeleton_Rogue.glb`, `Skeleton_Minion.glb`
 - Author: **Kay Lousberg (KayKit)** · License: **CC0**
 - Source: https://github.com/KayKit-Game-Assets/KayKit-Character-Pack-Skeletons-1.0
 - Use: NPC variety for the challenge houses (same clip names / rig as Adventurers).

@@ -6,7 +6,8 @@ import { Npc } from '../player/Npc';
 import { Furniture } from './Furniture';
 import { InteractionManager } from './InteractionManager';
 import { exitToTown } from '../state/location';
-import { NPC_RIGS, type CharacterRig } from '../player/characterModel';
+import { startTalk } from '../state/dialog';
+import { houseContent } from '../content/houses';
 import type { Collider } from './townData';
 
 /**
@@ -28,16 +29,12 @@ const WALLS: Collider[] = [
   { minX: DOOR_HALF, maxX: R, minZ: R, maxZ: R + WALL_T }, // front-right
 ];
 
-export function InteriorScene({
-  houseId,
-  accent = PALETTE.accentAmber,
-  npcRig = NPC_RIGS.knight,
-}: {
-  houseId?: string;
-  accent?: string;
-  npcRig?: CharacterRig;
-}) {
+export function InteriorScene({ houseId }: { houseId?: string }) {
   const floorMat = useMemo(() => makeToon({ color: PALETTE.cream }), []);
+  const content = houseContent(houseId);
+  const accent = content.accent;
+  const npc = content.npcRig;
+  const NPC_POS: [number, number, number] = [1.6, 0, -3.4];
 
   return (
     <>
@@ -68,13 +65,14 @@ export function InteriorScene({
       <Furniture item="pictureframe_large_A" position={[0, 2.1, -R + 0.25]} />
 
       {/* the resident NPC, standing by the couch, facing the door/player */}
-      <Npc rig={npcRig} position={[1.6, 0, -3.4]} yaw={Math.PI} />
+      <Npc rig={npc} position={NPC_POS} yaw={Math.PI} />
 
       <Player colliders={WALLS} occluders={WALLS} bound={R - 0.6} camFull={6} spawn={[0, 0, R - 1.5]} />
 
-      {/* exit trigger at the door → back to town by this house's exterior */}
+      {/* triggers: talk to the NPC, and leave by the door */}
       <InteractionManager
         points={[
+          { id: 'talk', label: `Talk to ${content.npcName}  ·  press E`, x: NPC_POS[0], z: NPC_POS[2], radius: 3.4, onActivate: () => startTalk(content.id) },
           { id: 'exit', label: 'Leave  ·  press E', x: 0, z: R - 0.4, radius: 1.8, onActivate: () => exitToTown(houseId) },
         ]}
       />
