@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { makeToon, PALETTE } from '../render/toon';
 import { InkBox } from './Inked';
 import { Player } from '../player/Player';
+import { InteractionManager } from './InteractionManager';
+import { exitToTown } from '../state/location';
 import type { Collider } from './townData';
 
 /**
@@ -23,7 +25,7 @@ const WALLS: Collider[] = [
   { minX: DOOR_HALF, maxX: R, minZ: R, maxZ: R + WALL_T }, // front-right
 ];
 
-export function InteriorScene({ accent = PALETTE.accentAmber }: { houseId?: string; accent?: string }) {
+export function InteriorScene({ houseId, accent = PALETTE.accentAmber }: { houseId?: string; accent?: string }) {
   const floorMat = useMemo(() => makeToon({ color: PALETTE.cream }), []);
 
   return (
@@ -44,6 +46,13 @@ export function InteriorScene({ accent = PALETTE.accentAmber }: { houseId?: stri
       <InkBox args={[DOOR_HALF * 2, 0.25, WALL_T]} color={accent} glow={1.6} position={[0, WALL_H - 0.3, R]} />
 
       <Player colliders={WALLS} occluders={WALLS} bound={R - 0.6} camFull={6} spawn={[0, 0, R - 1.5]} />
+
+      {/* exit trigger at the door → back to town by this house's exterior */}
+      <InteractionManager
+        points={[
+          { id: 'exit', label: 'Leave  ·  press E', x: 0, z: R - 0.4, radius: 1.8, onActivate: () => exitToTown(houseId) },
+        ]}
+      />
     </>
   );
 }

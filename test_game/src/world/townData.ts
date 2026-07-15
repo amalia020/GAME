@@ -1,36 +1,41 @@
-import { PALETTE } from '../render/toon';
+import type { BuildingModel } from './Building';
 
-export type RoofType = 'pitch' | 'flat' | 'stepped';
-
-export interface Building {
-  pos: [number, number];
-  size: [number, number, number];
-  color: string;
-  roof: string;
-  /** glow accent (cyan porthole / amber). */
-  accent: string;
-  roofType: RoofType;
-}
 export interface TreeDef { pos: [number, number]; scale: number; flower?: boolean }
 export interface BushDef { pos: [number, number]; scale: number }
 export interface PropDef { pos: [number, number]; kind: 'lamp' }
 
-const BLUE = PALETTE.accentBlue;
-const AMBER = PALETTE.accentAmber;
+/** A house = a KayKit building + identity. 1 MAIN (home-base hub) + 7 challenge
+ *  houses ring the plaza; every door faces the centre. */
+export interface House {
+  id: string;
+  name: string;
+  model: BuildingModel;
+  pos: [number, number];
+  main?: boolean;
+}
 
-/** Solarpunk villas ringing the square — warm cream/concrete bodies, terracotta
- *  or slate roofs, cyan/amber glow accents, mixed roof styles. */
-export const BUILDINGS: Building[] = [
-  { pos: [-11, -12], size: [6, 6, 6], color: PALETTE.cream, roof: PALETTE.roofRust, accent: BLUE, roofType: 'pitch' },
-  { pos: [-12, -1], size: [5, 5, 8], color: PALETTE.concrete, roof: PALETTE.roofBlue, accent: AMBER, roofType: 'flat' },
-  { pos: [-12, 10], size: [6, 5, 6], color: PALETTE.cream, roof: PALETTE.roofRust, accent: BLUE, roofType: 'pitch' },
-  { pos: [11, -13], size: [7, 8, 6], color: PALETTE.concrete, roof: PALETTE.roofBlue, accent: BLUE, roofType: 'stepped' },
-  { pos: [13, -1], size: [5, 6, 9], color: PALETTE.cream, roof: PALETTE.roofRust, accent: AMBER, roofType: 'pitch' },
-  { pos: [12, 11], size: [6, 6, 7], color: PALETTE.blue, roof: PALETTE.roofBlue, accent: BLUE, roofType: 'flat' },
-  { pos: [0, -21], size: [11, 9, 7], color: PALETTE.cream, roof: PALETTE.roofRust, accent: BLUE, roofType: 'stepped' },
-  { pos: [-23, 4], size: [7, 7, 11], color: PALETTE.concrete, roof: PALETTE.roofBlue, accent: AMBER, roofType: 'flat' },
-  { pos: [23, 5], size: [7, 7, 11], color: PALETTE.cream, roof: PALETTE.roofRust, accent: BLUE, roofType: 'pitch' },
-  { pos: [0, 23], size: [9, 7, 7], color: PALETTE.blue, roof: PALETTE.roofBlue, accent: AMBER, roofType: 'stepped' },
+export const HOUSE_SCALE = 3.2;
+const HALF = HOUSE_SCALE; // 2-unit building footprint → half-extent = scale
+
+/** Door faces the building's local +Z; rotate that toward the plaza centre. */
+export const houseYaw = (h: House): number => Math.atan2(-h.pos[0], -h.pos[1]);
+
+/** World x/z of the entry trigger, just outside the door face. */
+export const houseDoor = (h: House): [number, number] => {
+  const t = houseYaw(h);
+  const d = HALF + 1.3;
+  return [h.pos[0] + Math.sin(t) * d, h.pos[1] + Math.cos(t) * d];
+};
+
+export const HOUSES: House[] = [
+  { id: 'main', name: 'Home Base', model: 'H', pos: [0, -21], main: true },
+  { id: 'h1', name: 'House 1', model: 'A', pos: [-11, -12] },
+  { id: 'h2', name: 'House 2', model: 'C', pos: [-12, -1] },
+  { id: 'h3', name: 'House 3', model: 'E', pos: [-12, 10] },
+  { id: 'h4', name: 'House 4', model: 'B', pos: [11, -13] },
+  { id: 'h5', name: 'House 5', model: 'D', pos: [13, -1] },
+  { id: 'h6', name: 'House 6', model: 'F', pos: [12, 11] },
+  { id: 'h7', name: 'House 7', model: 'G', pos: [0, 23] },
 ];
 
 /** Trees — denser, some flowering (pink blossoms). */
@@ -58,16 +63,16 @@ export const PROPS: PropDef[] = [
 
 export interface Collider { minX: number; maxX: number; minZ: number; maxZ: number; }
 
-const fromBuilding = (b: Building): Collider => ({
-  minX: b.pos[0] - b.size[0] / 2, maxX: b.pos[0] + b.size[0] / 2,
-  minZ: b.pos[1] - b.size[2] / 2, maxZ: b.pos[1] + b.size[2] / 2,
+const fromHouse = (h: House): Collider => ({
+  minX: h.pos[0] - HALF, maxX: h.pos[0] + HALF,
+  minZ: h.pos[1] - HALF, maxZ: h.pos[1] + HALF,
 });
 const fromCircle = (x: number, z: number, r: number): Collider => ({
   minX: x - r, maxX: x + r, minZ: z - r, maxZ: z + r,
 });
 
-/** Building footprints — used for both collision and camera occlusion. */
-export const BUILDING_COLLIDERS: Collider[] = BUILDINGS.map(fromBuilding);
+/** House footprints — used for both collision and camera occlusion. */
+export const BUILDING_COLLIDERS: Collider[] = HOUSES.map(fromHouse);
 
 /** What the camera pulls in for: buildings + tree canopies (so foliage never
  *  buries the view of the character). */

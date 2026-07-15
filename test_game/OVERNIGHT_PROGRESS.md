@@ -17,7 +17,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - [x] **M0** — Finish + commit Phase 1 (KayKit wizard, shadows, sky, moonwalk fix; remove debug; soften shadows)
 - [x] **M1** — Download KayKit building/interior/NPC kits + write `CREDITS.md`
 - [x] **M2** — Scene/state system (town ⇄ interior[houseId])
-- [ ] **M3** — Replace villas with KayKit buildings + door "Enter" triggers
+- [x] **M3** — Replace villas with KayKit buildings + door "Enter" triggers
 - [ ] **M4** — Walk-in interior room template + NPC (idle)
 - [ ] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
 - [ ] **M6** — Wire all 8 buildings (main house hub + 7 challenge houses)
@@ -38,3 +38,9 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
   per-scene colliders/bounds/camera, TownScene extracted + InteriorScene stub (room w/
   door gap), fade overlay. Verified town→interior→town via temp e/q keys (real door
   triggers land in M3). tsc green, 0 errors. Next: M3 KayKit buildings + door triggers.
+- 2026-07-16 — M3 DONE. Replaced procedural villas with 8 KayKit City-Builder houses
+  (auto-facing doors via yaw=atan2(-x,-z), scale 3.2); stripped procedural building code
+  from TownSquare (kept trees/bushes/lamps). Interaction system: playerPos store,
+  InteractionManager (proximity + E), DOM InteractionPrompt, house door triggers, interior
+  exit door; exit returns at the house door. Verified in browser (colorful KayKit town,
+  Enter prompt, E enters). tsc green. Next: M4 furnish interiors + NPC.

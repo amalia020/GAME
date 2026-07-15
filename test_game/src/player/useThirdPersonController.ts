@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useKeys } from '../world/keys';
 import { COLLIDERS, CAMERA_OCCLUDERS, type Collider } from '../world/townData';
+import { playerPos } from '../state/interaction';
 
 const WALK = 4.2;
 const RUN = 8.5;
@@ -118,6 +119,7 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     [nx, nz] = resolveCollisions(nx, nz, RADIUS, colliders);
     g.position.x = nx;
     g.position.z = nz;
+    playerPos.copy(g.position); // publish live position for proximity/interaction
 
     // ---- jump + gravity ----
     if (k.jump && !wasJump.current && grounded.current) {

@@ -1,11 +1,24 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { TownScene } from './world/TownScene';
 import { InteriorScene } from './world/InteriorScene';
 import { InkEffects } from './render/InkEffects';
 import { GradientSky } from './render/GradientSky';
 import { FadeOverlay } from './ui/FadeOverlay';
-import { useLocation, enterHouse, exitToTown } from './state/location';
+import { InteractionPrompt } from './ui/InteractionPrompt';
+import { useLocation } from './state/location';
+import { HOUSES, houseDoor } from './world/townData';
+
+/** Where the player appears in town: at the door of the house they just left,
+ *  else the default plaza spot. */
+function townSpawn(spawnAt?: string): [number, number, number] {
+  const h = spawnAt ? HOUSES.find((x) => x.id === spawnAt) : undefined;
+  if (h) {
+    const [x, z] = houseDoor(h);
+    return [x, 0, z];
+  }
+  return [0, 0, 4];
+}
 
 /**
  * Ink Walk — a clean-slate experiment: cel-shaded + ink-outlined world with a
@@ -14,17 +27,6 @@ import { useLocation, enterHouse, exitToTown } from './state/location';
  */
 export function InkWalk() {
   const loc = useLocation();
-
-  // TEMP (M2 verification): 'e' enters a test interior, 'q' exits to town.
-  // Replaced by proximity door triggers in M3.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'e' && loc.kind === 'town') enterHouse('test');
-      if (e.key === 'q' && loc.kind === 'interior') exitToTown('test');
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [loc]);
 
   return (
     <>
@@ -58,7 +60,7 @@ export function InkWalk() {
 
       <Suspense fallback={null}>
         {loc.kind === 'town' ? (
-          <TownScene spawn={[0, 0, 4]} />
+          <TownScene spawn={townSpawn(loc.spawnAt)} />
         ) : (
           <InteriorScene houseId={loc.houseId} />
         )}
@@ -66,6 +68,7 @@ export function InkWalk() {
 
       <InkEffects />
     </Canvas>
+    <InteractionPrompt />
     <FadeOverlay />
     </>
   );
