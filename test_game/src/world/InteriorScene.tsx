@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { makeToon, PALETTE } from '../render/toon';
 import { InkBox } from './Inked';
 import { Player } from '../player/Player';
-import { Npc } from '../player/Npc';
+import { WanderNpc } from '../player/WanderNpc';
 import { Furniture } from './Furniture';
 import { InteractionManager } from './InteractionManager';
 import { exitToTown } from '../state/location';
@@ -64,8 +64,8 @@ export function InteriorScene({ houseId }: { houseId?: string }) {
       <Furniture item="shelf_A_big" position={[R - 0.35, 1.5, -2.5]} yaw={-Math.PI / 2} />
       <Furniture item="pictureframe_large_A" position={[0, 2.1, -R + 0.25]} />
 
-      {/* the resident NPC, standing by the couch, facing the door/player */}
-      <Npc rig={npc} position={NPC_POS} yaw={Math.PI} />
+      {/* the resident NPC — gently pacing near the couch */}
+      <WanderNpc rig={npc} home={NPC_POS} radius={1.5} speed={0.9} />
 
       <Player colliders={WALLS} occluders={WALLS} bound={R - 0.6} camFull={6} spawn={[0, 0, R - 1.5]} />
 
