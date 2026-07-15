@@ -16,7 +16,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 ## Milestones
 - [x] **M0** — Finish + commit Phase 1 (KayKit wizard, shadows, sky, moonwalk fix; remove debug; soften shadows)
 - [x] **M1** — Download KayKit building/interior/NPC kits + write `CREDITS.md`
-- [ ] **M2** — Scene/state system (town ⇄ interior[houseId])
+- [x] **M2** — Scene/state system (town ⇄ interior[houseId])
 - [ ] **M3** — Replace villas with KayKit buildings + door "Enter" triggers
 - [ ] **M4** — Walk-in interior room template + NPC (idle)
 - [ ] **M5** — Placeholder dialogue + tasks (data-driven `content/houses.ts`)
@@ -34,3 +34,7 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 - 2026-07-16 — M1 DONE. Downloaded KayKit City-Builder buildings A–H, Furniture Bits
   (17 pieces), and NPCs (Adventurers: Knight/Rogue/Rogue_Hooded/Barbarian + Skeletons:
   Warrior/Mage/Rogue). All CC0, logged in CREDITS.md. Next: M2 scene/state system.
+- 2026-07-16 — M2 DONE. External location store (town/interior), controller now takes
+  per-scene colliders/bounds/camera, TownScene extracted + InteriorScene stub (room w/
+  door gap), fade overlay. Verified town→interior→town via temp e/q keys (real door
+  triggers land in M3). tsc green, 0 errors. Next: M3 KayKit buildings + door triggers.

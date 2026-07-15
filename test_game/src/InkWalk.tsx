@@ -1,10 +1,11 @@
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Ground } from './world/Ground';
-import { TownSquare } from './world/TownSquare';
-import { Player } from './player/Player';
+import { TownScene } from './world/TownScene';
+import { InteriorScene } from './world/InteriorScene';
 import { InkEffects } from './render/InkEffects';
 import { GradientSky } from './render/GradientSky';
+import { FadeOverlay } from './ui/FadeOverlay';
+import { useLocation, enterHouse, exitToTown } from './state/location';
 
 /**
  * Ink Walk — a clean-slate experiment: cel-shaded + ink-outlined world with a
@@ -12,7 +13,21 @@ import { GradientSky } from './render/GradientSky';
  * opposite of MORPHO's pixel renderer) so the ink lines stay crisp.
  */
 export function InkWalk() {
+  const loc = useLocation();
+
+  // TEMP (M2 verification): 'e' enters a test interior, 'q' exits to town.
+  // Replaced by proximity door triggers in M3.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'e' && loc.kind === 'town') enterHouse('test');
+      if (e.key === 'q' && loc.kind === 'interior') exitToTown('test');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [loc]);
+
   return (
+    <>
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: true }}
@@ -42,12 +57,16 @@ export function InkWalk() {
       <directionalLight position={[-6, 5, -5]} intensity={0.4} color="#bcd6e8" />
 
       <Suspense fallback={null}>
-        <Ground />
-        <TownSquare />
-        <Player />
+        {loc.kind === 'town' ? (
+          <TownScene spawn={[0, 0, 4]} />
+        ) : (
+          <InteriorScene houseId={loc.houseId} />
+        )}
       </Suspense>
 
       <InkEffects />
     </Canvas>
+    <FadeOverlay />
+    </>
   );
 }

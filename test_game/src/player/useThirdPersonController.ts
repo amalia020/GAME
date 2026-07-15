@@ -6,10 +6,19 @@ import { COLLIDERS, CAMERA_OCCLUDERS, type Collider } from '../world/townData';
 
 const WALK = 4.2;
 const RUN = 8.5;
-const BOUND = 42; // keep the character from wandering off the curved edge
 const RADIUS = 0.5; // collision radius around the character
 const GRAVITY = 24;
 const JUMP_V = 8.4;
+
+/** Per-scene movement config. Defaults to the town so existing callers are unchanged. */
+export interface ControllerOpts {
+  colliders?: Collider[];
+  occluders?: Collider[];
+  /** half-extent clamp (square) keeping the player inside the scene. */
+  bound?: number;
+  /** base follow distance; interiors want a closer camera. */
+  camFull?: number;
+}
 
 /** Shared motion state the character mesh reads to drive its animation. */
 export interface Motion {
@@ -29,8 +38,8 @@ function lerpAngle(a: number, b: number, t: number): number {
 }
 
 /** Push a circle (px,pz,r) out of any AABB it overlaps; returns resolved x/z. */
-function resolveCollisions(px: number, pz: number, r: number): [number, number] {
-  for (const c of COLLIDERS as Collider[]) {
+function resolveCollisions(px: number, pz: number, r: number, colliders: Collider[]): [number, number] {
+  for (const c of colliders) {
     const minX = c.minX - r, maxX = c.maxX + r;
     const minZ = c.minZ - r, maxZ = c.maxZ + r;
     if (px > minX && px < maxX && pz > minZ && pz < maxZ) {
@@ -67,7 +76,11 @@ function segEntryT(px: number, pz: number, dx: number, dz: number, c: Collider, 
  * jump, AABB collision, and a smooth third-person follow camera. Returns a
  * Motion ref so the character mesh can pick idle/walk/run/jump.
  */
-export function useThirdPersonController(group: RefObject<THREE.Group>) {
+export function useThirdPersonController(group: RefObject<THREE.Group>, opts: ControllerOpts = {}) {
+  const colliders = opts.colliders ?? (COLLIDERS as Collider[]);
+  const occluders = opts.occluders ?? CAMERA_OCCLUDERS;
+  const BOUND = opts.bound ?? 42;
+  const FULL = opts.camFull ?? 8.5;
   const keys = useKeys();
   const vel = useRef(new THREE.Vector3());
   const vy = useRef(0);
@@ -102,7 +115,7 @@ export function useThirdPersonController(group: RefObject<THREE.Group>) {
     let nz = g.position.z + vel.current.z * dt;
     nx = THREE.MathUtils.clamp(nx, -BOUND, BOUND);
     nz = THREE.MathUtils.clamp(nz, -BOUND, BOUND);
-    [nx, nz] = resolveCollisions(nx, nz, RADIUS);
+    [nx, nz] = resolveCollisions(nx, nz, RADIUS, colliders);
     g.position.x = nx;
     g.position.z = nz;
 
@@ -134,10 +147,9 @@ export function useThirdPersonController(group: RefObject<THREE.Group>) {
     // follow camera — sits behind (+Z) and above. If a building occludes the
     // character, pull the camera IN so the character is always visible (no more
     // looking through walls into building interiors).
-    const FULL = 8.5;
     const camR = 0.7;
     let allowed = FULL;
-    for (const c of CAMERA_OCCLUDERS) {
+    for (const c of occluders) {
       const t = segEntryT(g.position.x, g.position.z, 0, FULL, c, camR);
       if (t !== Infinity) allowed = Math.min(allowed, t * FULL - 0.4);
     }
