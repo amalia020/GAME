@@ -32,6 +32,8 @@ export function GltfModel({
     clone.traverse((o: THREE.Object3D) => {
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh && mesh.material) {
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         mesh.material = Array.isArray(mesh.material)
           ? mesh.material.map((m) => toonifyMaterial(m, curve))
           : toonifyMaterial(mesh.material as THREE.Material, curve);

@@ -20,11 +20,11 @@ export function Ground() {
       </mesh>
 
       {/* road strip running into the distance */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} material={road}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} material={road} receiveShadow>
         <planeGeometry args={[7, 240, 8, 100]} />
       </mesh>
       {/* a crossing road */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, -8]} material={road}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, -8]} material={road} receiveShadow>
         <planeGeometry args={[60, 6, 60, 8]} />
       </mesh>
 

@@ -11,12 +11,14 @@ export const curveUniforms = {
   uNear: { value: 13.0 },
 };
 
-/** N-step grayscale ramp → hard cel bands as MeshToonMaterial.gradientMap. */
-function createToonGradient(steps = 3): THREE.DataTexture {
+/** N-step grayscale ramp → soft cel bands as MeshToonMaterial.gradientMap.
+ *  4 bands + a lifted floor give the softer, painterly Ghibli/Lunistice shading
+ *  (gentler light→shadow falloff than a hard 3-band comic cel). */
+function createToonGradient(steps = 4): THREE.DataTexture {
   const data = new Uint8Array(steps);
   for (let i = 0; i < steps; i++) {
-    // lifted floor so the shadow band reads but isn't pure black
-    data[i] = Math.round(THREE.MathUtils.lerp(115, 255, i / (steps - 1)));
+    // lifted floor so shadows stay warm & luminous, not muddy
+    data[i] = Math.round(THREE.MathUtils.lerp(148, 255, i / (steps - 1)));
   }
   const tex = new THREE.DataTexture(data, steps, 1, THREE.RedFormat);
   tex.minFilter = THREE.NearestFilter;
@@ -26,7 +28,7 @@ function createToonGradient(steps = 3): THREE.DataTexture {
   return tex;
 }
 
-const gradient = createToonGradient(3);
+const gradient = createToonGradient(4);
 
 /** Inject the curve-down displacement into a material's vertex stage. */
 export function curveWorld(material: THREE.Material) {

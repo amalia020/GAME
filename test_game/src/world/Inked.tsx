@@ -25,7 +25,7 @@ type InkBoxProps = {
 export function InkBox({ args, color, curve = true, outline = false, ink = 0.019, glow = 0, ...rest }: InkBoxProps) {
   const mat = useMemo(() => toon(color, curve, glow), [color, curve, glow]);
   return (
-    <mesh material={mat} {...rest}>
+    <mesh material={mat} castShadow receiveShadow {...rest}>
       <boxGeometry args={args} />
       {outline && <Outlines thickness={ink} color={INK} screenspace />}
     </mesh>
@@ -45,7 +45,7 @@ type InkCylProps = {
 export function InkCyl({ args, color, curve = true, outline = false, ink = 0.019, glow = 0, ...rest }: InkCylProps) {
   const mat = useMemo(() => toon(color, curve, glow), [color, curve, glow]);
   return (
-    <mesh material={mat} {...rest}>
+    <mesh material={mat} castShadow receiveShadow {...rest}>
       <cylinderGeometry args={args} />
       {outline && <Outlines thickness={ink} color={INK} screenspace />}
     </mesh>
@@ -63,7 +63,7 @@ type InkSphereProps = {
 export function InkSphere({ args, color, curve = true, glow = 0, ...rest }: InkSphereProps) {
   const mat = useMemo(() => toon(color, curve, glow), [color, curve, glow]);
   return (
-    <mesh material={mat} {...rest}>
+    <mesh material={mat} castShadow receiveShadow {...rest}>
       <sphereGeometry args={args} />
     </mesh>
   );
