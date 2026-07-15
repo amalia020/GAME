@@ -1,37 +1,37 @@
 import { InkBox, InkCyl, InkSphere } from './Inked';
+import { GltfModel } from './GltfModel';
+import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { PALETTE } from '../render/toon';
 import { BUILDINGS, TREES, BUSHES, PROPS, type Building as B, type TreeDef, type BushDef } from './townData';
 
 type V3 = [number, number, number];
 const GLOW = 1.7;
+const TREE_SCALE = 1.6;
+const BUSH_SCALE = 1.2;
 
 /* ----------------------------- greenery parts ----------------------------- */
 
-/** Rounded low bush — a couple of squashed leaf spheres. */
-function Bush({ pos, scale = 1 }: { pos: [number, number]; scale?: number }) {
-  const [x, z] = pos;
+/** A CC0 kit bush variant, placed + toon-shaded. */
+function Bush({ b, i }: { b: BushDef; i: number }) {
+  const v = BUSH_VARIANTS[i % BUSH_VARIANTS.length];
+  const name = v.names[i % v.names.length];
   return (
-    <group position={[x, 0, z]} scale={[scale, scale * 0.8, scale]}>
-      <InkSphere args={[0.5, 8, 6]} color={PALETTE.leaf} position={[0, 0.4, 0]} />
-      <InkSphere args={[0.36, 8, 6]} color={PALETTE.leafLight} position={[0.26, 0.5, 0.16]} />
-      <InkSphere args={[0.32, 8, 6]} color={PALETTE.leafDeep} position={[-0.26, 0.44, -0.12]} />
-    </group>
+    <GltfModel url={v.url} name={name}
+      position={[b.pos[0], 0, b.pos[1]]}
+      scale={BUSH_SCALE * b.scale}
+      rotation={[0, (i * 2.1) % (Math.PI * 2), 0]} />
   );
 }
 
-/** Lush tree — rounded canopy clusters, optional pink blossoms. */
-function Tree({ t }: { t: TreeDef }) {
-  const [x, z] = t.pos;
+/** A CC0 kit tree variant (rotating tree types for variety). */
+function Tree({ t, i }: { t: TreeDef; i: number }) {
+  const v = TREE_VARIANTS[i % TREE_VARIANTS.length];
+  const name = v.names[(i * 2) % v.names.length];
   return (
-    <group position={[x, 0, z]} scale={t.scale}>
-      <InkCyl args={[0.2, 0.28, 1.5, 6]} color={PALETTE.woodDark} position={[0, 0.75, 0]} />
-      <InkSphere args={[1.3, 9, 7]} color={PALETTE.leafDeep} position={[0, 2.1, 0]} />
-      <InkSphere args={[1.05, 9, 7]} color={PALETTE.leaf} position={[0.7, 2.5, 0.3]} />
-      <InkSphere args={[0.95, 9, 7]} color={PALETTE.leafLight} position={[-0.6, 2.7, -0.2]} />
-      {t.flower && [[-0.7, 2.2, 0.8], [0.9, 2.9, -0.4], [0.1, 3.2, 0.5], [-0.3, 2.6, -0.8]].map((p, i) => (
-        <InkSphere key={i} args={[0.28, 6, 5]} color={PALETTE.flower} position={p as V3} />
-      ))}
-    </group>
+    <GltfModel url={v.url} name={name}
+      position={[t.pos[0], 0, t.pos[1]]}
+      scale={TREE_SCALE * t.scale}
+      rotation={[0, (i * 1.3) % (Math.PI * 2), 0]} />
   );
 }
 
@@ -223,8 +223,8 @@ export function TownSquare() {
   return (
     <group>
       {BUILDINGS.map((b, i) => <Building key={`b${i}`} b={b} index={i} />)}
-      {TREES.map((t, i) => <Tree key={`t${i}`} t={t} />)}
-      {BUSHES.map((bs: BushDef, i) => <Bush key={`bush${i}`} pos={bs.pos} scale={bs.scale} />)}
+      {TREES.map((t, i) => <Tree key={`t${i}`} t={t} i={i} />)}
+      {BUSHES.map((b, i) => <Bush key={`bush${i}`} b={b} i={i} />)}
 
       {PROPS.map((p, i) => (
         <group key={`p${i}`} position={[p.pos[0], 0, p.pos[1]]}>

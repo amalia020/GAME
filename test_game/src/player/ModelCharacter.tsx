@@ -44,7 +44,7 @@ export function ModelCharacter({
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh && mesh.material) {
         mesh.material = Array.isArray(mesh.material)
-          ? mesh.material.map(toonifyMaterial)
+          ? mesh.material.map((m) => toonifyMaterial(m))
           : toonifyMaterial(mesh.material as THREE.Material);
       }
     });

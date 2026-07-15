@@ -75,15 +75,18 @@ export function makeToon({ color, curve = true, emissive = 0 }: ToonOpts): THREE
  * base color + texture. Used to make GLB characters match the world's toon
  * style. Not curved (characters live in the flat near field).
  */
-export function toonifyMaterial(src: THREE.Material): THREE.MeshToonMaterial {
+export function toonifyMaterial(src: THREE.Material, curve = false): THREE.MeshToonMaterial {
   const s = src as THREE.MeshStandardMaterial;
-  return new THREE.MeshToonMaterial({
+  const m = new THREE.MeshToonMaterial({
     color: s.color ? s.color.clone() : new THREE.Color('#cccccc'),
     map: s.map ?? null,
     gradientMap: gradient,
     transparent: src.transparent,
     opacity: src.opacity,
+    vertexColors: (src as THREE.MeshStandardMaterial).vertexColors ?? false,
   });
+  if (curve) curveWorld(m); // world props bend with the horizon; characters don't
+  return m;
 }
 
 /** Solarpunk palette — warm cream/concrete + lush greens + amber & cyan glow,
