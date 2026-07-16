@@ -1,7 +1,8 @@
 import { GltfModel } from './GltfModel';
 import { Sway } from './Sway';
 import { ROCK_VARIANT, GRASS_VARIANT, FLOWER_VARIANT, type Variant } from './nature';
-import { HOUSES, PLAZA_POS } from './townData';
+import { PLAZA_POS } from './townData';
+import { onGrass } from './placement';
 
 /** deterministic 0..1 hash so scatter is stable across renders. */
 const rng = (n: number) => {
@@ -9,16 +10,16 @@ const rng = (n: number) => {
   return x - Math.floor(x);
 };
 
-/** Ground-detail points on the grass (ring around the plaza), skipping anything
- *  that would land on a house footprint or too close to the plaza. */
+/** Ground-detail points, kept strictly on grass (off plaza/paths/buildings). We
+ *  over-sample and keep only the ones that land on grass, so density stays high. */
 function points(count: number, seed: number, rMin: number, rMax: number): [number, number][] {
   const pts: [number, number][] = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < count * 3 && pts.length < count; i++) {
     const a = rng(seed + i) * Math.PI * 2;
     const r = rMin + rng(seed + i + 99) * (rMax - rMin);
     const x = PLAZA_POS[0] + Math.cos(a) * r;
     const z = PLAZA_POS[2] + Math.sin(a) * r;
-    if (HOUSES.some((h) => Math.hypot(x - h.pos[0], z - h.pos[1]) < 5)) continue;
+    if (!onGrass(x, z, 0.6)) continue;
     pts.push([x, z]);
   }
   return pts;
@@ -49,9 +50,10 @@ function Detail({ variant, pts, base, jitter, sway, seed }: {
 export function Scatter() {
   return (
     <>
-      <Detail variant={ROCK_VARIANT} pts={points(8, 1, 8, 22)} base={0.7} jitter={0.7} sway={false} seed={11} />
-      <Detail variant={GRASS_VARIANT} pts={points(28, 20, 7, 24)} base={1.0} jitter={0.7} sway seed={31} />
-      <Detail variant={FLOWER_VARIANT} pts={points(16, 40, 8, 22)} base={0.8} jitter={0.5} sway seed={53} />
+      <Detail variant={ROCK_VARIANT} pts={points(10, 1, 8, 26)} base={0.7} jitter={0.7} sway={false} seed={11} />
+      {/* dense grass tufts across the whole lawn so it isn't a flat green plane */}
+      <Detail variant={GRASS_VARIANT} pts={points(90, 20, 7, 30)} base={1.0} jitter={0.9} sway seed={31} />
+      <Detail variant={FLOWER_VARIANT} pts={points(40, 40, 7, 28)} base={0.8} jitter={0.6} sway seed={53} />
     </>
   );
 }

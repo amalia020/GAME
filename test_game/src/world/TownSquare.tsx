@@ -4,6 +4,11 @@ import { Sway } from './Sway';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { PALETTE } from '../render/toon';
 import { TREES, BUSHES, PROPS, type TreeDef, type BushDef } from './townData';
+import { onGrass } from './placement';
+
+// keep foliage on grass only — never on the plaza or tiled paths
+const GRASS_TREES = TREES.filter((t) => onGrass(t.pos[0], t.pos[1], 0.8));
+const GRASS_BUSHES = BUSHES.filter((b) => onGrass(b.pos[0], b.pos[1], 0.5));
 
 const TREE_SCALE = 1.6;
 const BUSH_SCALE = 1.2;
@@ -39,8 +44,8 @@ function Tree({ t, i }: { t: TreeDef; i: number }) {
 export function TownSquare() {
   return (
     <group>
-      {TREES.map((t, i) => <Tree key={`t${i}`} t={t} i={i} />)}
-      {BUSHES.map((b, i) => <Bush key={`bush${i}`} b={b} i={i} />)}
+      {GRASS_TREES.map((t, i) => <Tree key={`t${i}`} t={t} i={i} />)}
+      {GRASS_BUSHES.map((b, i) => <Bush key={`bush${i}`} b={b} i={i} />)}
 
       {PROPS.map((p, i) => (
         <group key={`p${i}`} position={[p.pos[0], 0, p.pos[1]]} rotation={[0, (i * 1.7) % (Math.PI * 2), 0]}>
