@@ -35,6 +35,12 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 - Source: https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0
 - Use: the town's houses (1 main + 7 challenge) + streetlights and street props.
 
+## Fountain — Isa Lousberg "Tiny Treats"
+- File: `public/models/kits/props/fountain.glb`
+- Author: **Isa Lousberg** · License: **CC0**
+- Source: https://poly.pizza/m/WHc7dwttlk (Poly Pizza, no login)
+- Use: the central plaza fountain (toon-shaded; water mesh given a glowing pulse).
+
 ## Interior furniture — KayKit "Furniture Bits"
 - Files: `public/models/kits/interior/*.gltf` (+ `.bin`) + `furniturebits_texture.png`
   (armchair, bed_single_A, book_set, cabinet_medium, chair_A, chair_A_wood,
