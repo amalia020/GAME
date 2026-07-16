@@ -1,7 +1,6 @@
 import { GltfModel } from './GltfModel';
 import { Sway } from './Sway';
-import { InkCyl } from './Inked';
-import { PALETTE } from '../render/toon';
+import { ForestBackdrop, type Placement } from './ForestBackdrop';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { EDGE_R } from './townData';
 
@@ -13,27 +12,43 @@ const rng = (n: number) => {
 
 const TREES_N = 96; // PACKED — overlapping canopies across several rows, no gaps to see through
 const BUSH_N = 34; // undergrowth filling the gaps at ground level
-const WALL_N = 80; // the dark forest mass BEHIND the detailed trees
+const BACK_ROWS = 5; // depth of the instanced backdrop forest
+const BACK_PER_ROW = 58; // trees per row — tight enough that trunks overlap
+
+/** Pines read best as a deep forest mass; broadleaf mixed in breaks up the ridge. */
+const BACK_PINE = { url: '/models/kits/nature/pine-trees.glb', names: ['PineTree_1', 'PineTree_2', 'PineTree_3', 'PineTree_4', 'PineTree_5'] };
+const BACK_LEAF = { url: '/models/kits/nature/trees.glb', names: ['NormalTree_1', 'NormalTree_3', 'NormalTree_5'] };
 
 /**
  * The forest edge ringing the village clearing, built in depth:
- *   1. a solid dark "forest wall" of overlapping conifer masses furthest out —
- *      this is what makes the woods opaque, so no sky leaks between trunks
- *   2. a jittered, multi-row treeline of detailed models in front of it
+ *   1. an instanced backdrop forest of REAL pine + broadleaf models, five rows
+ *      deep — this is what makes the woods opaque, so no sky leaks between trunks
+ *   2. a jittered, multi-row treeline of detailed swaying models in front of it
  *   3. undergrowth filling the gaps at ground level
  * So the village feels nestled in a clearing and the woods are what stop you,
  * not an invisible wall.
  */
 export function VillageEdge() {
-  // backdrop: big overlapping cones packed shoulder-to-shoulder. Cheap, unlit
-  // detail-free geometry — it only ever reads as a dense mass of distant forest.
-  const wall = Array.from({ length: WALL_N }, (_, i) => {
-    const a = (i / WALL_N) * Math.PI * 2 + (rng(i + 400) - 0.5) * 0.04;
-    const r = EDGE_R + 6.5 + rng(i + 410) * 3.5;
-    // cones are centred on y=0 (half buried), so h/2 is the visible height: tall
-    // enough that no sightline escapes, low enough to leave sky above the canopy
-    return { x: Math.cos(a) * r, z: Math.sin(a) * r, h: 13 + rng(i + 420) * 7, i };
-  });
+  // Backdrop rows: staggered so each row plugs the gaps of the one in front.
+  // Instanced, so hundreds of real trees cost about ten draw calls.
+  const back: Placement[] = [];
+  for (let row = 0; row < BACK_ROWS; row++) {
+    for (let i = 0; i < BACK_PER_ROW; i++) {
+      const seed = row * 997 + i;
+      // half-step offset per row = no radial "corridors" to see down
+      const a = ((i + (row % 2) * 0.5) / BACK_PER_ROW) * Math.PI * 2 + (rng(seed) - 0.5) * 0.05;
+      const r = EDGE_R + 5.5 + row * 3.4 + rng(seed + 11) * 1.8;
+      back.push({
+        x: Math.cos(a) * r,
+        z: Math.sin(a) * r,
+        s: 2.4 + rng(seed + 23) * 1.5, // big: they must clear the front treeline
+        r: rng(seed + 31) * Math.PI * 2,
+      });
+    }
+  }
+  // pines carry the mass; every 4th tree is broadleaf so the ridge isn't uniform
+  const backPine = back.filter((_, i) => i % 4 !== 0);
+  const backLeaf = back.filter((_, i) => i % 4 === 0);
 
   // staggered rows: each tree gets a jittered angle + depth so canopies overlap
   // and there is no straight line of sight out of the clearing
@@ -51,16 +66,9 @@ export function VillageEdge() {
 
   return (
     <>
-      {/* 1. the opaque forest mass — drawn first, sits behind everything */}
-      {wall.map((w) => (
-        <InkCyl
-          key={`ew${w.i}`}
-          args={[0, 3.4 + rng(w.i + 430) * 1.6, w.h, 6]}
-          color={w.i % 3 === 0 ? PALETTE.leafDeep : PALETTE.vine}
-          position={[w.x, 0, w.z]}
-          outline={false}
-        />
-      ))}
+      {/* 1. the opaque forest mass — real trees, instanced, behind everything */}
+      <ForestBackdrop url={BACK_PINE.url} names={BACK_PINE.names} placements={backPine} />
+      <ForestBackdrop url={BACK_LEAF.url} names={BACK_LEAF.names} placements={backLeaf} />
       {trees.map((t) => {
         const v = TREE_VARIANTS[t.i % TREE_VARIANTS.length];
         const name = v.names[(t.i * 3) % v.names.length];
