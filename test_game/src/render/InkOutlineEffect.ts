@@ -37,7 +37,9 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth,
 
   // scale by depth so distant edges still register; ignore the far sky plane
   float edge = lap / (dC * 0.05 + 0.0001);
-  float ink = smoothstep(0.4, 1.0, edge) * uStrength;
+  // high threshold → only strong silhouettes (buildings, characters) ink; fine
+  // foliage/leaf creases stay clean (no black boxes around leaves)
+  float ink = smoothstep(0.9, 1.7, edge) * uStrength;
   ink *= step(dC, cameraFar * 0.92); // don't ink the background
 
   outputColor = vec4(mix(inputColor.rgb, uColor, ink), inputColor.a);
@@ -51,7 +53,7 @@ export interface InkOutlineOptions {
 }
 
 export class InkOutlineEffect extends Effect {
-  constructor({ color = new Color('#0a0e1a'), thickness = 1.7, strength = 1.0 }: InkOutlineOptions = {}) {
+  constructor({ color = new Color('#2a2119'), thickness = 1.2, strength = 0.62 }: InkOutlineOptions = {}) {
     super('InkOutlineEffect', fragmentShader, {
       attributes: EffectAttribute.DEPTH,
       uniforms: new Map<string, Uniform<unknown>>([

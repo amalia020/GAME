@@ -1,8 +1,6 @@
-import { InkSphere } from './Inked';
 import { GltfModel } from './GltfModel';
 import { Sway } from './Sway';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
-import { PALETTE } from '../render/toon';
 import { TREES, BUSHES, PROPS, type TreeDef, type BushDef } from './townData';
 import { onGrass } from './placement';
 
@@ -49,9 +47,8 @@ export function TownSquare() {
 
       {PROPS.map((p, i) => (
         <group key={`p${i}`} position={[p.pos[0], 0, p.pos[1]]} rotation={[0, (i * 1.7) % (Math.PI * 2), 0]}>
-          {/* KayKit streetlight + a warm glowing bulb at the lamp head */}
+          {/* KayKit streetlight (its own lamp head — no extra glow sphere) */}
           <GltfModel url="/models/kits/buildings/streetlight.gltf" scale={3.2} />
-          <InkSphere args={[0.28, 10, 8]} color={PALETTE.accentAmber} glow={2.2} position={[0, 2.95, 0.55]} />
         </group>
       ))}
     </group>
