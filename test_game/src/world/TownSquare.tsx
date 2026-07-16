@@ -1,5 +1,6 @@
 import { GltfModel } from './GltfModel';
 import { Sway } from './Sway';
+import { ProximityFade } from './ProximityFade';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { TREES, BUSHES, PROPS, type TreeDef, type BushDef } from './townData';
 import { onGrass } from './placement';
@@ -24,15 +25,19 @@ function Bush({ b, i }: { b: BushDef; i: number }) {
   );
 }
 
-/** A CC0 kit tree variant (rotating tree types for variety), swaying in the wind. */
+/** A CC0 kit tree variant (rotating tree types for variety), swaying in the wind.
+ *  Dissolves when the camera gets into its canopy — the camera holds a fixed
+ *  distance now and won't dodge foliage itself. */
 function Tree({ t, i }: { t: TreeDef; i: number }) {
   const v = TREE_VARIANTS[i % TREE_VARIANTS.length];
   const name = v.names[(i * 2) % v.names.length];
   return (
     <group position={[t.pos[0], 0, t.pos[1]]}>
-      <Sway amount={0.05} speed={0.8} phase={i * 1.3}>
-        <GltfModel url={v.url} name={name} scale={TREE_SCALE * t.scale} rotation={[0, (i * 1.3) % (Math.PI * 2), 0]} />
-      </Sway>
+      <ProximityFade>
+        <Sway amount={0.05} speed={0.8} phase={i * 1.3}>
+          <GltfModel url={v.url} name={name} scale={TREE_SCALE * t.scale} rotation={[0, (i * 1.3) % (Math.PI * 2), 0]} />
+        </Sway>
+      </ProximityFade>
     </group>
   );
 }

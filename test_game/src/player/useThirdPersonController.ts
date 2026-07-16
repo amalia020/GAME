@@ -2,7 +2,7 @@ import { useRef, type RefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useKeys } from '../world/keys';
-import { COLLIDERS, CAMERA_OCCLUDERS, type Collider } from '../world/townData';
+import { COLLIDERS, type Collider } from '../world/townData';
 import { playerPos } from '../state/interaction';
 import { isTalking } from '../state/dialog';
 import { crowdMembers } from '../state/crowd';
@@ -16,7 +16,6 @@ const JUMP_V = 8.4;
 /** Per-scene movement config. Defaults to the town so existing callers are unchanged. */
 export interface ControllerOpts {
   colliders?: Collider[];
-  occluders?: Collider[];
   /** half-extent clamp (square) keeping the player inside the scene. */
   bound?: number;
   /** circular play area (overrides the square bound) — keeps the player in the
@@ -64,29 +63,12 @@ function resolveCollisions(px: number, pz: number, r: number, colliders: Collide
 }
 
 /**
- * Entry fraction (0..1) where the segment (px,pz)→(px+dx,pz+dz) first enters an
- * AABB inflated by r, or Infinity if it misses. Used for camera occlusion: if a
- * building sits between the character and the camera, we pull the camera in.
- */
-function segEntryT(px: number, pz: number, dx: number, dz: number, c: Collider, r: number): number {
-  const minX = c.minX - r, maxX = c.maxX + r, minZ = c.minZ - r, maxZ = c.maxZ + r;
-  let tmin = 0, tmax = 1;
-  if (Math.abs(dx) < 1e-6) { if (px < minX || px > maxX) return Infinity; }
-  else { let t1 = (minX - px) / dx, t2 = (maxX - px) / dx; if (t1 > t2) { const t = t1; t1 = t2; t2 = t; } tmin = Math.max(tmin, t1); tmax = Math.min(tmax, t2); }
-  if (Math.abs(dz) < 1e-6) { if (pz < minZ || pz > maxZ) return Infinity; }
-  else { let t1 = (minZ - pz) / dz, t2 = (maxZ - pz) / dz; if (t1 > t2) { const t = t1; t1 = t2; t2 = t; } tmin = Math.max(tmin, t1); tmax = Math.min(tmax, t2); }
-  if (tmax < tmin) return Infinity;
-  return tmin < 0 ? 0 : tmin;
-}
-
-/**
  * Momentum movement (world-axis: forward = into the scene, away from camera) +
  * jump, AABB collision, and a smooth third-person follow camera. Returns a
  * Motion ref so the character mesh can pick idle/walk/run/jump.
  */
 export function useThirdPersonController(group: RefObject<THREE.Group>, opts: ControllerOpts = {}) {
   const colliders = opts.colliders ?? (COLLIDERS as Collider[]);
-  const occluders = opts.occluders ?? CAMERA_OCCLUDERS;
   const BOUND = opts.bound ?? 42;
   const FULL = opts.camFull ?? 8.5;
   const keys = useKeys();
@@ -96,7 +78,6 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
   const wasJump = useRef(false);
   const motion = useRef<Motion>({ amount: 0, phase: 0, airborne: false });
   const tmp = useRef(new THREE.Vector3());
-  const camDist = useRef(8.5); // smoothed camera distance (shrinks when occluded)
 
   useFrame((state, dtRaw) => {
     const g = group.current;
@@ -187,32 +168,15 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
       return;
     }
 
-    // follow camera — sits behind (+Z) and above. If a building occludes the
-    // character, pull the camera IN so the character is always visible (no more
-    // looking through walls into building interiors).
-    // Keep the test radius TINY: a fat radius means simply standing beside a wall
-    // puts the player inside the inflated box (t = 0) and slams the camera in,
-    // even though nothing is actually between the character and the camera.
-    const camR = 0.2;
-    let allowed = FULL;
-    for (const c of occluders) {
-      const t = segEntryT(g.position.x, g.position.z, 0, FULL, c, camR);
-      if (t !== Infinity) allowed = Math.min(allowed, t * FULL - 0.4);
-    }
-    // A wall can legitimately force the camera very close (e.g. the north-facing
-    // house: the only space behind the character IS the building). Allow it —
-    // being cramped beats being inside the wall — but never reach the character.
-    allowed = THREE.MathUtils.clamp(allowed, 1.0, FULL);
-    // pull in fast (don't let a wall fill the screen); ease back out gently
-    const camK = allowed < camDist.current ? 20 : 4;
-    camDist.current += (allowed - camDist.current) * (1 - Math.exp(-camK * dt));
-    const frac = camDist.current / FULL;
-    // Keep height on the ground baseline (jumps don't jerk the cam). When a wall
-    // forces the camera in close, LIFT it over the obstacle rather than burying
-    // it in the geometry — the view goes top-down-ish but -Z stays "up the
-    // screen", so the world-axis controls still read the same.
-    const lift = (1 - frac) * 3.6;
-    const camGoal = tmp.current.set(g.position.x, 3.6 + 2.6 * frac + lift, g.position.z + camDist.current);
+    // Follow camera — sits behind (+Z) and above, at a CONSTANT distance.
+    //
+    // It deliberately does nothing about obstacles. The camera is locked behind
+    // the character, so when a house sits a couple of units back there is no
+    // distance that both frames the character and clears the wall: pulling in
+    // means top-down, staying put means looking through a roof. Instead the
+    // house ghosts itself out of the way (see <Building>), which leaves the
+    // framing — and the world-axis controls that depend on it — untouched.
+    const camGoal = tmp.current.set(g.position.x, 6.2, g.position.z + FULL);
     state.camera.position.lerp(camGoal, 1 - Math.exp(-6 * dt));
     state.camera.lookAt(g.position.x, 1.2, g.position.z);
   });

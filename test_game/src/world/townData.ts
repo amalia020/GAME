@@ -1,4 +1,4 @@
-import type { BuildingModel } from './Building';
+import { BUILDING_NATIVE_H, type BuildingModel } from './Building';
 
 export interface TreeDef { pos: [number, number]; scale: number; flower?: boolean }
 export interface BushDef { pos: [number, number]; scale: number }
@@ -74,6 +74,10 @@ export const EDGE_R = 28.4;
 
 export interface Collider { minX: number; maxX: number; minZ: number; maxZ: number; }
 
+/** A collider with a roof height — enough to test occlusion in 3D rather than
+ *  on the flat, so a camera that clears the roofline doesn't count as blocked. */
+export interface Box3 extends Collider { id: string; maxY: number; }
+
 const fromHouse = (h: House): Collider => ({
   minX: h.pos[0] - HALF, maxX: h.pos[0] + HALF,
   minZ: h.pos[1] - HALF, maxZ: h.pos[1] + HALF,
@@ -82,16 +86,19 @@ const fromCircle = (x: number, z: number, r: number): Collider => ({
   minX: x - r, maxX: x + r, minZ: z - r, maxZ: z + r,
 });
 
-/** House footprints — used for both collision and camera occlusion. */
+/** House footprints — used for collision. */
 export const BUILDING_COLLIDERS: Collider[] = HOUSES.map(fromHouse);
 
-/** What the camera pulls in for: buildings, plus tree TRUNKS only. (Canopies used
- *  to count too, which yanked the camera in every time you walked near a tree —
- *  foliage briefly clipping is far less jarring than constant zooming.) */
-export const CAMERA_OCCLUDERS: Collider[] = [
-  ...BUILDING_COLLIDERS,
-  ...TREES.map((t) => fromCircle(t.pos[0], t.pos[1], 0.55 * t.scale)),
-];
+/** House volumes (footprint + roof height). A house between you and the camera
+ *  FADES OUT rather than shoving the camera around: the camera is locked behind
+ *  you on +Z, so when a house is a couple of units back there is no distance that
+ *  both frames you and clears the wall — every option is a bad camera. Ghosting
+ *  the house is what isometric games do, and it keeps the framing untouched. */
+export const BUILDING_BOXES: Box3[] = HOUSES.map((h) => ({
+  ...fromHouse(h),
+  id: h.id,
+  maxY: BUILDING_NATIVE_H[h.model] * HOUSE_SCALE,
+}));
 
 /** Footprints the player can't walk through (buildings, tree trunks, lamps, fountain). */
 export const COLLIDERS: Collider[] = [

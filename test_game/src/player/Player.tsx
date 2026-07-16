@@ -7,7 +7,6 @@ import type { Collider } from '../world/townData';
 /** The character + its controller (movement + follow camera), per-scene configurable. */
 export function Player({
   colliders,
-  occluders,
   bound,
   boundCircle,
   camFull,
@@ -16,7 +15,6 @@ export function Player({
   faceYaw = 0,
 }: {
   colliders?: Collider[];
-  occluders?: Collider[];
   bound?: number;
   boundCircle?: { cx: number; cz: number; r: number };
   camFull?: number;
@@ -26,7 +24,7 @@ export function Player({
   faceYaw?: number;
 }) {
   const group = useRef<THREE.Group>(null);
-  const motion = useThirdPersonController(group, { colliders, occluders, bound, boundCircle, camFull, fixedCam });
+  const motion = useThirdPersonController(group, { colliders, bound, boundCircle, camFull, fixedCam });
 
   // place the player at the scene's spawn point on mount / scene change
   useLayoutEffect(() => {
