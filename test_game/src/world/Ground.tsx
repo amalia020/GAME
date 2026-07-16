@@ -10,22 +10,13 @@ import { InkCyl } from './Inked';
  */
 export function Ground() {
   const grass = useMemo(() => makeToon({ color: PALETTE.grass }), []);
-  const road = useMemo(() => makeToon({ color: PALETTE.road }), []);
 
   return (
     <group>
-      {/* grass — high segment count for a smooth horizon bend */}
+      {/* grass — high segment count for a smooth horizon bend. Walkways are now the
+          tiled stone <Paths> from the plaza to each house (see TownScene). */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} material={grass} receiveShadow>
         <planeGeometry args={[240, 240, 100, 100]} />
-      </mesh>
-
-      {/* road strip running into the distance */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]} material={road} receiveShadow>
-        <planeGeometry args={[7, 240, 8, 100]} />
-      </mesh>
-      {/* a crossing road */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, -8]} material={road} receiveShadow>
-        <planeGeometry args={[60, 6, 60, 8]} />
       </mesh>
 
       {/* distant hills (curved, no outline) — horizon silhouettes in vine greens */}
