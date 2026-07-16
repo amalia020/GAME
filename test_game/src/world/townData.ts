@@ -28,14 +28,14 @@ export const houseDoor = (h: House): [number, number] => {
 };
 
 export const HOUSES: House[] = [
-  { id: 'main', name: 'Home Base', model: 'H', pos: [0, -21], main: true },
-  { id: 'h1', name: 'House 1', model: 'A', pos: [-11, -12] },
-  { id: 'h2', name: 'House 2', model: 'C', pos: [-12, -1] },
-  { id: 'h3', name: 'House 3', model: 'E', pos: [-12, 10] },
-  { id: 'h4', name: 'House 4', model: 'B', pos: [11, -13] },
-  { id: 'h5', name: 'House 5', model: 'D', pos: [13, -1] },
-  { id: 'h6', name: 'House 6', model: 'F', pos: [12, 11] },
-  { id: 'h7', name: 'House 7', model: 'G', pos: [0, 23] },
+  { id: 'main', name: 'MORPHO Core', model: 'H', pos: [0, -21], main: true },
+  { id: 'h1', name: 'Computer Vision Lab', model: 'A', pos: [-11, -12] },
+  { id: 'h2', name: 'NLP Department', model: 'C', pos: [-12, -1] },
+  { id: 'h3', name: 'Machine Learning Core', model: 'E', pos: [-12, 10] },
+  { id: 'h4', name: 'Agents Division', model: 'B', pos: [11, -13] },
+  { id: 'h5', name: 'Data Science Wing', model: 'D', pos: [13, -1] },
+  { id: 'h6', name: 'Deep Learning Labs', model: 'F', pos: [12, 11] },
+  { id: 'h7', name: 'Lab Archive', model: 'G', pos: [0, 23] },
 ];
 
 /** Trees — denser, some flowering (pink blossoms). */
