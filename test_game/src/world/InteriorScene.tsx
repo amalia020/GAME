@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import * as THREE from 'three';
 import { makeToon, PALETTE } from '../render/toon';
 import { InkBox } from './Inked';
 import { Player } from '../player/Player';
@@ -11,14 +12,19 @@ import { houseContent } from '../content/houses';
 import type { Collider } from './townData';
 
 /**
- * A cozy walk-in interior: warm wood floor, cream walls with skirting + a trim
- * rail, a lit window, a framed door, KayKit furniture, and a warm interior light.
- * Camera overlooks the open-top room (no wall occluders). Per-house NPC + accent.
+ * A cozy walk-in interior: fully enclosed (4 walls + ceiling) so you're truly
+ * INSIDE — a FIXED camera sits just inside the front wall and looks across the
+ * room toward the furnished back wall (no dollhouse view, no black void, no
+ * exterior). Warm wood floor, cream walls with skirting + rail, KayKit furniture.
  */
 const R = 6; // room half-size (x/z)
 const WALL_H = 3.6;
 const WALL_T = 0.4;
 const DOOR_HALF = 1.3;
+
+/** fixed room camera: stand just inside the front wall, tilted down so the player
+ *  and the exit mat in the foreground stay in view along with the furnished back. */
+const CAM = { pos: [0, 3.4, 5.7] as [number, number, number], look: [0, 0.7, -1.8] as [number, number, number] };
 
 const WALLS: Collider[] = [
   { minX: -R, maxX: R, minZ: -R - WALL_T, maxZ: -R },
@@ -30,6 +36,31 @@ const WALLS: Collider[] = [
 
 const WALL = '#e7dcc4'; // warm cream wall
 const FLOOR = '#c8a878'; // warm wood floor
+
+/** A canvas-textured exit doormat: "EXIT" + an arrow pointing out (toward the front). */
+function makeMatTexture(accent: string): THREE.CanvasTexture {
+  const W = 256, H = 200;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const ctx = c.getContext('2d')!;
+  ctx.fillStyle = '#5b4a30';
+  ctx.beginPath();
+  const r = 16;
+  ctx.moveTo(r, 4); ctx.arcTo(W - 4, 4, W - 4, H - 4, r); ctx.arcTo(W - 4, H - 4, 4, H - 4, r);
+  ctx.arcTo(4, H - 4, 4, 4, r); ctx.arcTo(4, 4, W - 4, 4, r); ctx.fill();
+  ctx.lineWidth = 8; ctx.strokeStyle = accent; ctx.stroke();
+  // EXIT text
+  ctx.fillStyle = '#f4ecd8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.font = '800 44px ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText('EXIT', W / 2, 58);
+  // downward chevron arrow (points toward the door / camera)
+  ctx.strokeStyle = accent; ctx.lineWidth = 16; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(W / 2 - 40, 108); ctx.lineTo(W / 2, 150); ctx.lineTo(W / 2 + 40, 108); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W / 2 - 40, 138); ctx.lineTo(W / 2, 180); ctx.lineTo(W / 2 + 40, 138); ctx.stroke();
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  return tex;
+}
 
 /** One wall with a skirting board at the base + a wood trim rail. */
 function Wall({ args, position }: { args: [number, number, number]; position: [number, number, number] }) {
@@ -48,19 +79,27 @@ function Wall({ args, position }: { args: [number, number, number]; position: [n
 
 export function InteriorScene({ houseId }: { houseId?: string }) {
   const floorMat = useMemo(() => makeToon({ color: FLOOR }), []);
+  const ceilMat = useMemo(() => makeToon({ color: '#d8ccb2' }), []);
   const content = houseContent(houseId);
   const accent = content.accent;
+  const matTex = useMemo(() => makeMatTexture(accent), [accent]);
   const npc = content.npcRig;
   const NPC_POS: [number, number, number] = [2.4, 0, -3.2];
 
   return (
     <>
-      {/* warm interior light for coziness (on top of the global daylight) */}
-      <pointLight position={[0, 3.2, -1]} intensity={0.5} color="#ffd9a0" distance={18} />
+      {/* warm interior lights for coziness */}
+      <pointLight position={[0, 3.2, -1]} intensity={0.7} color="#ffd9a0" distance={20} />
+      <pointLight position={[0, 3.2, 3.5]} intensity={0.35} color="#ffd9a0" distance={14} />
 
       {/* wood floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} material={floorMat} receiveShadow>
         <planeGeometry args={[R * 2, R * 2]} />
+      </mesh>
+
+      {/* ceiling (faces down into the room) — encloses the space */}
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, WALL_H, 0]} material={ceilMat}>
+        <planeGeometry args={[R * 2 + WALL_T, R * 2 + WALL_T]} />
       </mesh>
 
       {/* walls with skirting + rail */}
@@ -94,17 +133,23 @@ export function InteriorScene({ houseId }: { houseId?: string }) {
       <Furniture item="shelf_A_big" position={[R - 0.35, 1.6, -2.5]} yaw={-Math.PI / 2} />
       <Furniture item="pictureframe_large_A" position={[0, 2.2, -R + 0.26]} />
 
+      {/* exit doormat (arrow toward the door) in the visible foreground */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 1.4]}>
+        <planeGeometry args={[2.4, 1.8]} />
+        <meshBasicMaterial map={matTex} transparent toneMapped={false} />
+      </mesh>
+
       {/* the resident NPC — gently pacing near the couch */}
       <WanderNpc rig={npc} home={NPC_POS} radius={1.4} speed={0.9} />
 
-      {/* no wall occluders (open-top room) → camera overlooks from behind/above */}
-      <Player colliders={WALLS} occluders={[]} bound={R - 0.6} camFull={8} spawn={[0, 0, R - 1.5]} />
+      {/* fixed camera inside the room → you're truly inside, no dollhouse/black */}
+      <Player colliders={WALLS} bound={R - 0.6} fixedCam={CAM} spawn={[0, 0, -0.3]} />
 
-      {/* triggers: talk to the NPC, and leave by the door */}
+      {/* triggers: talk to the NPC, and leave via the exit mat (in view) */}
       <InteractionManager
         points={[
           { id: 'talk', label: `Talk to ${content.npcName}  ·  press E`, x: NPC_POS[0], z: NPC_POS[2], radius: 3.4, onActivate: () => startTalk(content.id) },
-          { id: 'exit', label: 'Leave  ·  press E', x: 0, z: R - 0.4, radius: 1.8, onActivate: () => exitToTown(houseId) },
+          { id: 'exit', label: 'Leave  ·  press E', x: 0, z: 1.4, radius: 1.5, onActivate: () => exitToTown(houseId) },
         ]}
       />
     </>

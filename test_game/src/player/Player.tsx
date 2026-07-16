@@ -10,6 +10,7 @@ export function Player({
   occluders,
   bound,
   camFull,
+  fixedCam,
   spawn = [0, 0, 0],
   faceYaw = 0,
 }: {
@@ -17,12 +18,13 @@ export function Player({
   occluders?: Collider[];
   bound?: number;
   camFull?: number;
+  fixedCam?: { pos: [number, number, number]; look: [number, number, number] };
   spawn?: [number, number, number];
   /** initial facing (radians) so the player looks into the scene on spawn. */
   faceYaw?: number;
 }) {
   const group = useRef<THREE.Group>(null);
-  const motion = useThirdPersonController(group, { colliders, occluders, bound, camFull });
+  const motion = useThirdPersonController(group, { colliders, occluders, bound, camFull, fixedCam });
 
   // place the player at the scene's spawn point on mount / scene change
   useLayoutEffect(() => {

@@ -21,6 +21,8 @@ export interface ControllerOpts {
   bound?: number;
   /** base follow distance; interiors want a closer camera. */
   camFull?: number;
+  /** if set, use a FIXED camera (no follow) — for enclosed interior rooms. */
+  fixedCam?: { pos: [number, number, number]; look: [number, number, number] };
 }
 
 /** Shared motion state the character mesh reads to drive its animation. */
@@ -159,6 +161,15 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     if (vel.current.lengthSq() > 0.4) {
       const desired = Math.atan2(-vel.current.x, -vel.current.z);
       g.rotation.y = lerpAngle(g.rotation.y, desired, 1 - Math.exp(-12 * dt));
+    }
+
+    // ---- camera ----
+    if (opts.fixedCam) {
+      // fixed room camera (enclosed interior): frame the whole room, don't follow
+      const fc = opts.fixedCam;
+      state.camera.position.set(fc.pos[0], fc.pos[1], fc.pos[2]);
+      state.camera.lookAt(fc.look[0], fc.look[1], fc.look[2]);
+      return;
     }
 
     // follow camera — sits behind (+Z) and above. If a building occludes the
