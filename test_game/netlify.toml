@@ -1,0 +1,29 @@
+# Netlify config for the Village of the Wizards game.
+# The deployable app is THIS directory (test_game/), not the repo root — the root
+# is a parked pnpm workspace (game/ api/ slides/). Set the site's base directory
+# to `test_game` in the Netlify UI, or deploy from inside this folder.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page app: every route serves index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Models and fonts are content-hashed by filename in the kit and never change in
+# place, so they can be cached hard. The JS bundle is hashed by Vite already.
+[[headers]]
+  for = "/models/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
