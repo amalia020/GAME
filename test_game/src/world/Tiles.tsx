@@ -2,64 +2,69 @@ import { useLayoutEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { makeToon } from '../render/toon';
 
-/** stone shades for per-tile variation (cobble look). */
-const STONE = ['#cec7b4', '#c1b9a6', '#d4cdbc', '#b7af9d', '#c8c1ae'];
+/** warm stone pavers (subtle variation) sitting on a darker mortar base. */
+const STONE = ['#ccc2ac', '#c4baa2', '#d2c9b4', '#bdb39b'];
+const GROUT = '#9c937f'; // mortar shown in the joints (never grass)
 
-const TILE = 1.1;
-const GAP = 0.14;
+const TILE = 1.0; // paver size
+const GAP = 0.16; // joint width (mortar shows here)
 const STEP = TILE + GAP;
+const BASE_TOP = 0.12; // mortar surface height
+const TILE_TOP = 0.16; // paver top (a hair above the mortar → crisp, shallow joints)
+
+/** Set instanced paver matrices + subtle per-tile shade. */
+function fill(
+  mesh: THREE.InstancedMesh | null,
+  tiles: { x: number; z: number; c: number }[],
+) {
+  if (!mesh) return;
+  const o = new THREE.Object3D();
+  const col = new THREE.Color();
+  tiles.forEach((t, i) => {
+    o.position.set(t.x, TILE_TOP / 2, t.z);
+    o.scale.set(1, TILE_TOP, 1);
+    o.updateMatrix();
+    mesh.setMatrixAt(i, o.matrix);
+    col.set(STONE[t.c]);
+    mesh.setColorAt(i, col);
+  });
+  mesh.instanceMatrix.needsUpdate = true;
+  if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+}
 
 /**
- * A tiled stone path from `from` → `to` (world x/z). One InstancedMesh (cheap):
- * a grid of slightly jittered, varied-shade slabs — reads as cobbled pavement and
- * toon-shades / curves with the rest of the world.
+ * A tiled stone path from `from` → `to`: a solid mortar strip + neat, uniform
+ * pavers on top (tight joints show mortar, never grass). No jitter — clean.
  */
-export function TilePath({ from, to, width = 2.6 }: { from: [number, number]; to: [number, number]; width?: number }) {
+export function TilePath({ from, to, width = 2.8 }: { from: [number, number]; to: [number, number]; width?: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const mat = useMemo(() => makeToon({ color: STONE[0] }), []);
+  const baseMat = useMemo(() => makeToon({ color: GROUT }), []);
 
-  const { count, angle, tiles } = useMemo(() => {
+  const { count, angle, len, cols, tiles } = useMemo(() => {
     const dx = to[0] - from[0];
     const dz = to[1] - from[1];
     const len = Math.hypot(dx, dz);
-    const angle = Math.atan2(dx, dz); // local +Z points toward `to`
+    const angle = Math.atan2(dx, dz); // local +Z toward `to`
     const rows = Math.max(1, Math.round(len / STEP));
     const cols = Math.max(1, Math.round(width / STEP));
-    const tiles: { x: number; z: number; h: number; rot: number; c: number }[] = [];
+    const tiles: { x: number; z: number; c: number }[] = [];
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        tiles.push({
-          x: (c - (cols - 1) / 2) * STEP + Math.sin(r * 3.1 + c) * 0.04,
-          z: r * STEP + STEP / 2,
-          h: 0.1 + ((r + c) % 2) * 0.03,
-          rot: Math.sin(r * 1.7 + c * 2.3) * 0.06,
-          c: (r * 3 + c * 2) % STONE.length,
-        });
+        tiles.push({ x: (c - (cols - 1) / 2) * STEP, z: r * STEP + STEP / 2, c: (r * 3 + c * 2) % STONE.length });
       }
     }
-    return { count: tiles.length, angle, tiles };
+    return { count: tiles.length, angle, len, cols, tiles };
   }, [from, to, width]);
 
-  useLayoutEffect(() => {
-    const m = ref.current;
-    if (!m) return;
-    const o = new THREE.Object3D();
-    const col = new THREE.Color();
-    tiles.forEach((t, i) => {
-      o.position.set(t.x, t.h / 2, t.z);
-      o.rotation.set(0, t.rot, 0);
-      o.scale.set(1, t.h, 1);
-      o.updateMatrix();
-      m.setMatrixAt(i, o.matrix);
-      col.set(STONE[t.c]);
-      m.setColorAt(i, col);
-    });
-    m.instanceMatrix.needsUpdate = true;
-    if (m.instanceColor) m.instanceColor.needsUpdate = true;
-  }, [tiles]);
+  useLayoutEffect(() => fill(ref.current, tiles), [tiles]);
 
   return (
-    <group position={[from[0], 0.05, from[1]]} rotation={[0, angle, 0]}>
+    <group position={[from[0], 0.03, from[1]]} rotation={[0, angle, 0]}>
+      {/* mortar base strip */}
+      <mesh position={[0, BASE_TOP / 2, len / 2]} material={baseMat} receiveShadow>
+        <boxGeometry args={[cols * STEP, BASE_TOP, len + STEP * 0.5]} />
+      </mesh>
       <instancedMesh ref={ref} args={[undefined, undefined, count]} material={mat} receiveShadow>
         <boxGeometry args={[TILE, 1, TILE]} />
       </instancedMesh>
@@ -67,52 +72,43 @@ export function TilePath({ from, to, width = 2.6 }: { from: [number, number]; to
   );
 }
 
-/** A cobbled circular plaza (same varied-stone tiles) — fills a disc of `radius`
- *  centred on its parent group. Used under/around the fountain. */
-export function TileDisc({ radius = 6.4 }: { radius?: number }) {
+/**
+ * A cobbled circular plaza: a solid mortar disc, neat pavers clipped inside the
+ * circle (none poke past the edge), and a raised stone curb ring framing it.
+ */
+export function TileDisc({ radius = 6.6 }: { radius?: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);
   const mat = useMemo(() => makeToon({ color: STONE[0] }), []);
+  const baseMat = useMemo(() => makeToon({ color: GROUT }), []);
+  const curbMat = useMemo(() => makeToon({ color: '#b7ad97' }), []);
 
   const { count, tiles } = useMemo(() => {
     const n = Math.ceil(radius / STEP) + 1;
-    const tiles: { x: number; z: number; h: number; rot: number; c: number }[] = [];
+    const tiles: { x: number; z: number; c: number }[] = [];
     for (let r = -n; r <= n; r++) {
       for (let c = -n; c <= n; c++) {
-        const x = c * STEP + Math.sin(r * 3.1 + c) * 0.04;
+        const x = c * STEP;
         const z = r * STEP;
-        if (Math.hypot(x, z) > radius - 0.3) continue;
-        tiles.push({
-          x,
-          z,
-          h: 0.1 + ((r + c) & 1) * 0.03,
-          rot: Math.sin(r * 1.7 + c * 2.3) * 0.06,
-          c: ((r * 3 + c * 2) % STONE.length + STONE.length) % STONE.length,
-        });
+        // keep pavers fully inside the circle (no square poke-out past the rim)
+        if (Math.hypot(x, z) > radius - TILE * 0.7) continue;
+        tiles.push({ x, z, c: ((r * 3 + c * 2) % STONE.length + STONE.length) % STONE.length });
       }
     }
     return { count: tiles.length, tiles };
   }, [radius]);
 
-  useLayoutEffect(() => {
-    const m = ref.current;
-    if (!m) return;
-    const o = new THREE.Object3D();
-    const col = new THREE.Color();
-    tiles.forEach((t, i) => {
-      o.position.set(t.x, t.h / 2, t.z);
-      o.rotation.set(0, t.rot, 0);
-      o.scale.set(1, t.h, 1);
-      o.updateMatrix();
-      m.setMatrixAt(i, o.matrix);
-      col.set(STONE[t.c]);
-      m.setColorAt(i, col);
-    });
-    m.instanceMatrix.needsUpdate = true;
-    if (m.instanceColor) m.instanceColor.needsUpdate = true;
-  }, [tiles]);
+  useLayoutEffect(() => fill(ref.current, tiles), [tiles]);
 
   return (
-    <group position={[0, 0.05, 0]}>
+    <group position={[0, 0.03, 0]}>
+      {/* mortar disc (its clean round edge IS the plaza edge) */}
+      <mesh position={[0, BASE_TOP / 2, 0]} material={baseMat} receiveShadow>
+        <cylinderGeometry args={[radius, radius, BASE_TOP, 48]} />
+      </mesh>
+      {/* raised stone curb ring framing the circle */}
+      <mesh position={[0, BASE_TOP, 0]} rotation={[-Math.PI / 2, 0, 0]} material={curbMat}>
+        <ringGeometry args={[radius - 0.25, radius + 0.15, 48]} />
+      </mesh>
       <instancedMesh ref={ref} args={[undefined, undefined, count]} material={mat} receiveShadow>
         <boxGeometry args={[TILE, 1, TILE]} />
       </instancedMesh>

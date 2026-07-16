@@ -10,8 +10,7 @@ import { PALETTE } from '../render/toon';
 export function Plaza({ position = [0, 0, -4] as [number, number, number] }: { position?: [number, number, number] }) {
   return (
     <group position={position}>
-      {/* cobbled circular plaza (tiled like the paths) + a stone curb */}
-      <InkCyl args={[7.0, 7.0, 0.16, 40]} color={PALETTE.concrete} position={[0, 0.02, 0]} outline={false} />
+      {/* cobbled circular plaza — mortar disc + clipped pavers + curb (self-contained) */}
       <TileDisc radius={6.8} />
 
       {/* the kit fountain (toon-shaded, glowing animated water) */}
