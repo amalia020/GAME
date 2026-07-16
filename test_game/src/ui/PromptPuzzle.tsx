@@ -123,7 +123,7 @@ export function PromptPuzzle() {
   );
 }
 
-const font = 'ui-sans-serif, system-ui, sans-serif';
+const font = '"Baloo 2", ui-rounded, system-ui, sans-serif';
 const backdrop: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(20,18,14,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 80, font: `400 15px ${font}` };
 const panel: React.CSSProperties = { width: 'min(680px, 94vw)', maxHeight: '86vh', overflow: 'auto', background: 'rgba(28,25,19,0.98)', color: '#f4ecd8', borderRadius: 18, padding: '20px 24px', border: '1px solid rgba(247,236,216,0.12)', boxShadow: '0 24px 70px rgba(0,0,0,0.6)' };
 const head: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' };

@@ -103,14 +103,14 @@ function HudButton({ icon, label, onClick }: { icon: string; label: string; onCl
   );
 }
 
-const font = 'ui-sans-serif, system-ui, sans-serif';
+const font = '"Baloo 2", ui-rounded, system-ui, sans-serif';
 const xpWrap: React.CSSProperties = { position: 'fixed', top: 14, left: 14, display: 'flex', alignItems: 'center', gap: 8, zIndex: 30 };
 const levelBadge: React.CSSProperties = { background: '#f7b13e', color: '#241a0a', fontWeight: 800, borderRadius: 8, padding: '4px 8px', font: `800 13px ${font}` };
 const xpTrack: React.CSSProperties = { width: 150, height: 9, background: 'rgba(20,18,14,0.35)', borderRadius: 999, overflow: 'hidden' };
 const xpFill: React.CSSProperties = { height: '100%', background: 'linear-gradient(90deg,#7dd3fc,#38bdf8)' };
 const xpLabel: React.CSSProperties = { color: '#f4ecd8', font: `600 12px ${font}`, textShadow: '0 1px 3px rgba(0,0,0,0.5)' };
 const btnBar: React.CSSProperties = { position: 'fixed', top: 12, right: 14, display: 'flex', gap: 8, zIndex: 30 };
-const hudBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', borderRadius: 10, border: '1px solid rgba(247,236,216,0.15)', background: 'rgba(24,22,17,0.82)', color: '#f4ecd8', font: `600 13px ${font}`, cursor: 'pointer' };
+const hudBtn: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px 9px', borderRadius: 13, border: '2px solid #4a3620', borderTop: '2px solid #ab8354', background: 'linear-gradient(#916f47, #6d5133)', color: '#f9f0d8', font: `800 14px ${font}`, textShadow: '0 2px 0 rgba(58,38,18,0.5)', boxShadow: '0 4px 10px rgba(0,0,0,0.32)', cursor: 'pointer' };
 const backdrop: React.CSSProperties = { position: 'fixed', inset: 0, background: 'rgba(20,18,14,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 70 };
 const modal: React.CSSProperties = { width: 'min(560px, 92vw)', maxHeight: '80vh', overflow: 'auto', background: 'rgba(28,25,19,0.97)', color: '#f4ecd8', borderRadius: 18, padding: '20px 24px', border: '1px solid rgba(247,236,216,0.12)', boxShadow: '0 20px 60px rgba(0,0,0,0.55)', font: `400 15px ${font}` };
 const modalHead: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 };

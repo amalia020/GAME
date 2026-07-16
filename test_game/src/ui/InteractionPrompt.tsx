@@ -15,7 +15,7 @@ export function InteractionPrompt() {
         borderRadius: 999,
         background: 'rgba(20,18,14,0.82)',
         color: '#f4ecd8',
-        font: '600 15px/1 ui-sans-serif, system-ui, sans-serif',
+        font: '600 15px/1 "Baloo 2", ui-rounded, system-ui, sans-serif',
         letterSpacing: 0.3,
         boxShadow: '0 4px 20px rgba(0,0,0,0.35)',
         pointerEvents: 'none',

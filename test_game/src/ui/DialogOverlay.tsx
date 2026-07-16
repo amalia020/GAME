@@ -86,7 +86,7 @@ const panel: React.CSSProperties = {
   width: 'min(680px, 92vw)', background: 'rgba(24,22,17,0.94)', color: '#f4ecd8',
   borderRadius: 16, padding: '18px 22px', boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
   border: '1px solid rgba(247,236,216,0.12)', cursor: 'pointer',
-  font: '400 16px/1.4 ui-sans-serif, system-ui, sans-serif',
+  font: '400 16px/1.4 "Baloo 2", ui-rounded, system-ui, sans-serif',
 };
 const nameTag: React.CSSProperties = {
   display: 'inline-block', fontWeight: 800, letterSpacing: 0.4,
@@ -100,5 +100,5 @@ const btn: React.CSSProperties = {
 const taskRow: React.CSSProperties = {
   textAlign: 'left', padding: '10px 12px', borderRadius: 10,
   background: 'rgba(20,18,14,0.5)', border: '1px solid rgba(247,236,216,0.1)',
-  color: '#f4ecd8', cursor: 'pointer', font: '400 15px/1.35 ui-sans-serif, system-ui, sans-serif',
+  color: '#f4ecd8', cursor: 'pointer', font: '400 15px/1.35 "Baloo 2", ui-rounded, system-ui, sans-serif',
 };

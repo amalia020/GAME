@@ -58,6 +58,12 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 - Source: https://quaternius.com/packs/ultimatestylizednature.html · https://poly.pizza/
 - Use: trees, bushes, rocks scattered around the town.
 
+## UI font — "Baloo 2"
+- Files: `public/fonts/baloo2-700.woff2`, `baloo2-800.woff2` (latin subset, self-hosted)
+- Author: **Ek Type** · License: **SIL Open Font License 1.1 (OFL)** — free to bundle/use
+- Source: https://fonts.google.com/specimen/Baloo+2
+- Use: the game's chunky rounded toon UI font (labels, HUD, panels).
+
 ## three.js example models (placeholders — being phased out)
 - Files: `public/models/RobotExpressive.glb`, `Soldier.glb`
 - `RobotExpressive.glb` — by Tomás Laulhé, modified by Don McCurdy. License: **CC0**.
