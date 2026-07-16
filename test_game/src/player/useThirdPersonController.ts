@@ -190,20 +190,29 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     // follow camera — sits behind (+Z) and above. If a building occludes the
     // character, pull the camera IN so the character is always visible (no more
     // looking through walls into building interiors).
-    const camR = 0.7;
+    // Keep the test radius TINY: a fat radius means simply standing beside a wall
+    // puts the player inside the inflated box (t = 0) and slams the camera in,
+    // even though nothing is actually between the character and the camera.
+    const camR = 0.2;
     let allowed = FULL;
     for (const c of occluders) {
       const t = segEntryT(g.position.x, g.position.z, 0, FULL, c, camR);
       if (t !== Infinity) allowed = Math.min(allowed, t * FULL - 0.4);
     }
-    allowed = THREE.MathUtils.clamp(allowed, 2.6, FULL);
+    // A wall can legitimately force the camera very close (e.g. the north-facing
+    // house: the only space behind the character IS the building). Allow it —
+    // being cramped beats being inside the wall — but never reach the character.
+    allowed = THREE.MathUtils.clamp(allowed, 1.0, FULL);
     // pull in fast (don't let a wall fill the screen); ease back out gently
     const camK = allowed < camDist.current ? 20 : 4;
     camDist.current += (allowed - camDist.current) * (1 - Math.exp(-camK * dt));
     const frac = camDist.current / FULL;
-    // keep height on the ground baseline (jumps don't jerk the cam); lower it as
-    // the camera pulls in so it stays behind the character, not above it.
-    const camGoal = tmp.current.set(g.position.x, 3.6 + 2.6 * frac, g.position.z + camDist.current);
+    // Keep height on the ground baseline (jumps don't jerk the cam). When a wall
+    // forces the camera in close, LIFT it over the obstacle rather than burying
+    // it in the geometry — the view goes top-down-ish but -Z stays "up the
+    // screen", so the world-axis controls still read the same.
+    const lift = (1 - frac) * 3.6;
+    const camGoal = tmp.current.set(g.position.x, 3.6 + 2.6 * frac + lift, g.position.z + camDist.current);
     state.camera.position.lerp(camGoal, 1 - Math.exp(-6 * dt));
     state.camera.lookAt(g.position.x, 1.2, g.position.z);
   });

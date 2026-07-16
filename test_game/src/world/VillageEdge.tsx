@@ -1,5 +1,7 @@
 import { GltfModel } from './GltfModel';
 import { Sway } from './Sway';
+import { InkCyl } from './Inked';
+import { PALETTE } from '../render/toon';
 import { TREE_VARIANTS, BUSH_VARIANTS } from './nature';
 import { EDGE_R } from './townData';
 
@@ -9,29 +11,56 @@ const rng = (n: number) => {
   return x - Math.floor(x);
 };
 
-const TREES_N = 46; // dense enough to read as woods, not a fence of trees
-const BUSH_N = 20;
+const TREES_N = 96; // PACKED — overlapping canopies across several rows, no gaps to see through
+const BUSH_N = 34; // undergrowth filling the gaps at ground level
+const WALL_N = 80; // the dark forest mass BEHIND the detailed trees
 
 /**
- * The forest edge ringing the village clearing: a jittered, multi-row treeline
- * (plus undergrowth) just outside the walkable radius — so the village feels
- * nestled in a clearing and the woods are what stop you, not an invisible wall.
+ * The forest edge ringing the village clearing, built in depth:
+ *   1. a solid dark "forest wall" of overlapping conifer masses furthest out —
+ *      this is what makes the woods opaque, so no sky leaks between trunks
+ *   2. a jittered, multi-row treeline of detailed models in front of it
+ *   3. undergrowth filling the gaps at ground level
+ * So the village feels nestled in a clearing and the woods are what stop you,
+ * not an invisible wall.
  */
 export function VillageEdge() {
+  // backdrop: big overlapping cones packed shoulder-to-shoulder. Cheap, unlit
+  // detail-free geometry — it only ever reads as a dense mass of distant forest.
+  const wall = Array.from({ length: WALL_N }, (_, i) => {
+    const a = (i / WALL_N) * Math.PI * 2 + (rng(i + 400) - 0.5) * 0.04;
+    const r = EDGE_R + 6.5 + rng(i + 410) * 3.5;
+    // cones are centred on y=0 (half buried), so h/2 is the visible height: tall
+    // enough that no sightline escapes, low enough to leave sky above the canopy
+    return { x: Math.cos(a) * r, z: Math.sin(a) * r, h: 13 + rng(i + 420) * 7, i };
+  });
+
+  // staggered rows: each tree gets a jittered angle + depth so canopies overlap
+  // and there is no straight line of sight out of the clearing
   const trees = Array.from({ length: TREES_N }, (_, i) => {
-    const a = (i / TREES_N) * Math.PI * 2 + (rng(i) - 0.5) * 0.1;
-    const r = EDGE_R + rng(i + 71) * 3.2; // 2–3 rows deep
+    const a = (i / TREES_N) * Math.PI * 2 + (rng(i) - 0.5) * 0.055;
+    const r = EDGE_R + rng(i + 71) * 6.5; // ~4 rows deep (28.4 → 35)
     return { x: Math.cos(a) * r, z: Math.sin(a) * r, i };
   });
 
   const bushes = Array.from({ length: BUSH_N }, (_, i) => {
-    const a = (i / BUSH_N) * Math.PI * 2 + rng(i + 200) * 0.28;
-    const r = EDGE_R - 1.3 + rng(i + 250) * 1.8; // undergrowth softening the tree line
+    const a = (i / BUSH_N) * Math.PI * 2 + rng(i + 200) * 0.2;
+    const r = EDGE_R - 1.4 + rng(i + 250) * 2.6; // undergrowth softening the tree line
     return { x: Math.cos(a) * r, z: Math.sin(a) * r, i };
   });
 
   return (
     <>
+      {/* 1. the opaque forest mass — drawn first, sits behind everything */}
+      {wall.map((w) => (
+        <InkCyl
+          key={`ew${w.i}`}
+          args={[0, 3.4 + rng(w.i + 430) * 1.6, w.h, 6]}
+          color={w.i % 3 === 0 ? PALETTE.leafDeep : PALETTE.vine}
+          position={[w.x, 0, w.z]}
+          outline={false}
+        />
+      ))}
       {trees.map((t) => {
         const v = TREE_VARIANTS[t.i % TREE_VARIANTS.length];
         const name = v.names[(t.i * 3) % v.names.length];

@@ -85,11 +85,12 @@ const fromCircle = (x: number, z: number, r: number): Collider => ({
 /** House footprints — used for both collision and camera occlusion. */
 export const BUILDING_COLLIDERS: Collider[] = HOUSES.map(fromHouse);
 
-/** What the camera pulls in for: buildings + tree canopies (so foliage never
- *  buries the view of the character). */
+/** What the camera pulls in for: buildings, plus tree TRUNKS only. (Canopies used
+ *  to count too, which yanked the camera in every time you walked near a tree —
+ *  foliage briefly clipping is far less jarring than constant zooming.) */
 export const CAMERA_OCCLUDERS: Collider[] = [
   ...BUILDING_COLLIDERS,
-  ...TREES.map((t) => fromCircle(t.pos[0], t.pos[1], 1.2 * t.scale)),
+  ...TREES.map((t) => fromCircle(t.pos[0], t.pos[1], 0.55 * t.scale)),
 ];
 
 /** Footprints the player can't walk through (buildings, tree trunks, lamps, fountain). */
