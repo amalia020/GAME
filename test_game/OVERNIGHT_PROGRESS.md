@@ -28,9 +28,10 @@ Per-step gate: `cd test_game && npx tsc --noEmit` green → Playwright screensho
 The ink-walk sandbox is now a cohesive KayKit-styled game (branch `AGENTIC-TEST`,
 all pushed to GitHub):
 - **Character**: KayKit Mage wizard, walks/runs with real animation (moonwalk + glide bugs fixed).
-- **World**: colourful KayKit town — 8 houses ringing an **animated central fountain**
-  plaza, KayKit streetlights, benches/hydrants, swaying trees/bushes, painterly sky +
-  soft shadows.
+- **World**: colourful KayKit town — 8 houses ringing a **real kit fountain** (Isa
+  Lousberg, glowing animated water) on a paved plaza, **tiled stone paths to every
+  house**, KayKit streetlights, benches/hydrants, scattered rocks/grass/flowers,
+  swaying foliage, painterly sky + soft shadows.
 - **Life**: 5 townsfolk wander the plaza; each house has a resident NPC that paces.
 - **Houses**: all 8 enterable (walk to door → "Enter" → cozy furnished interior with
   wood floor, trim, lit window, KayKit furniture); talk to the NPC → **dialogue → tasks**
