@@ -65,6 +65,13 @@ export const PROPS: PropDef[] = [
 export const PLAZA_POS: [number, number, number] = [0, 0, -4];
 const FOUNTAIN_R = 2.4;
 
+/** The walkable village clearing (circular) — hugs the houses so you can't wander
+ *  off into empty grass. The farthest house footprint sits at ~26 from origin. */
+export const VILLAGE = { cx: 0, cz: 0, r: 27 };
+/** Where the forest edge starts — just outside the clearing, so the treeline (not
+ *  an invisible wall) is what stops you. */
+export const EDGE_R = 28.4;
+
 export interface Collider { minX: number; maxX: number; minZ: number; maxZ: number; }
 
 const fromHouse = (h: House): Collider => ({

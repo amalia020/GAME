@@ -6,7 +6,8 @@ import { Pedestrians } from './Pedestrians';
 import { Plaza } from './Plaza';
 import { Paths } from './Paths';
 import { Scatter } from './Scatter';
-import { PLAZA_POS } from './townData';
+import { VillageEdge } from './VillageEdge';
+import { PLAZA_POS, VILLAGE } from './townData';
 
 /** The outdoor hub: ground + tiled paths + KayKit houses + fountain + greenery + townsfolk + player. */
 export function TownScene({ spawn = [0, 0, 4] as [number, number, number] }: { spawn?: [number, number, number] }) {
@@ -18,8 +19,10 @@ export function TownScene({ spawn = [0, 0, 4] as [number, number, number] }: { s
       <Plaza position={PLAZA_POS} />
       <TownSquare />
       <Scatter />
+      <VillageEdge />
       <Pedestrians />
-      <Player spawn={spawn} />
+      {/* circular clearing: you can roam the whole village but not off into empty grass */}
+      <Player spawn={spawn} boundCircle={VILLAGE} />
     </>
   );
 }

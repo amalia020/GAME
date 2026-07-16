@@ -9,6 +9,7 @@ export function Player({
   colliders,
   occluders,
   bound,
+  boundCircle,
   camFull,
   fixedCam,
   spawn = [0, 0, 0],
@@ -17,6 +18,7 @@ export function Player({
   colliders?: Collider[];
   occluders?: Collider[];
   bound?: number;
+  boundCircle?: { cx: number; cz: number; r: number };
   camFull?: number;
   fixedCam?: { pos: [number, number, number]; look: [number, number, number] };
   spawn?: [number, number, number];
@@ -24,7 +26,7 @@ export function Player({
   faceYaw?: number;
 }) {
   const group = useRef<THREE.Group>(null);
-  const motion = useThirdPersonController(group, { colliders, occluders, bound, camFull, fixedCam });
+  const motion = useThirdPersonController(group, { colliders, occluders, bound, boundCircle, camFull, fixedCam });
 
   // place the player at the scene's spawn point on mount / scene change
   useLayoutEffect(() => {

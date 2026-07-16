@@ -19,6 +19,9 @@ export interface ControllerOpts {
   occluders?: Collider[];
   /** half-extent clamp (square) keeping the player inside the scene. */
   bound?: number;
+  /** circular play area (overrides the square bound) — keeps the player in the
+   *  village clearing instead of wandering into empty grass. */
+  boundCircle?: { cx: number; cz: number; r: number };
   /** base follow distance; interiors want a closer camera. */
   camFull?: number;
   /** if set, use a FIXED camera (no follow) — for enclosed interior rooms. */
@@ -120,8 +123,20 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     const dist = vel.current.length() * dt;
     let nx = g.position.x + vel.current.x * dt;
     let nz = g.position.z + vel.current.z * dt;
-    nx = THREE.MathUtils.clamp(nx, -BOUND, BOUND);
-    nz = THREE.MathUtils.clamp(nz, -BOUND, BOUND);
+    if (opts.boundCircle) {
+      // circular clearing: slide along the tree line instead of a square wall
+      const { cx, cz, r } = opts.boundCircle;
+      const ox = nx - cx;
+      const oz = nz - cz;
+      const d = Math.hypot(ox, oz);
+      if (d > r) {
+        nx = cx + (ox / d) * r;
+        nz = cz + (oz / d) * r;
+      }
+    } else {
+      nx = THREE.MathUtils.clamp(nx, -BOUND, BOUND);
+      nz = THREE.MathUtils.clamp(nz, -BOUND, BOUND);
+    }
     [nx, nz] = resolveCollisions(nx, nz, RADIUS, colliders);
     // push out of other NPCs (crowd) so you can't walk through them
     for (const m of crowdMembers()) {
