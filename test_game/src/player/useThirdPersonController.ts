@@ -5,6 +5,7 @@ import { useKeys } from '../world/keys';
 import { COLLIDERS, CAMERA_OCCLUDERS, type Collider } from '../world/townData';
 import { playerPos } from '../state/interaction';
 import { isTalking } from '../state/dialog';
+import { crowdMembers } from '../state/crowd';
 
 const WALK = 4.2;
 const RUN = 8.5;
@@ -120,6 +121,17 @@ export function useThirdPersonController(group: RefObject<THREE.Group>, opts: Co
     nx = THREE.MathUtils.clamp(nx, -BOUND, BOUND);
     nz = THREE.MathUtils.clamp(nz, -BOUND, BOUND);
     [nx, nz] = resolveCollisions(nx, nz, RADIUS, colliders);
+    // push out of other NPCs (crowd) so you can't walk through them
+    for (const m of crowdMembers()) {
+      const ex = nx - m.x;
+      const ez = nz - m.z;
+      const ed = Math.hypot(ex, ez);
+      const min = RADIUS + m.r;
+      if (ed < min && ed > 1e-4) {
+        nx = m.x + (ex / ed) * min;
+        nz = m.z + (ez / ed) * min;
+      }
+    }
     g.position.x = nx;
     g.position.z = nz;
     playerPos.copy(g.position); // publish live position for proximity/interaction

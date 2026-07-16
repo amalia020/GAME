@@ -3,6 +3,7 @@ import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { buildCharacterModel, type CharacterRig } from './characterModel';
+import { addCrowdMember, removeCrowdMember, type CrowdMember } from '../state/crowd';
 
 function lerpAngle(a: number, b: number, t: number): number {
   let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
@@ -34,6 +35,16 @@ export function WanderNpc({
   const target = useRef(new THREE.Vector3(home[0], 0, home[2]));
   const pause = useRef(1 + Math.random() * 2);
   const clip = useRef('');
+  const crowd = useRef<CrowdMember | null>(null);
+
+  // register as a solid obstacle the player collides with
+  useEffect(() => {
+    const m = addCrowdMember(0.55);
+    m.x = home[0];
+    m.z = home[2];
+    crowd.current = m;
+    return () => removeCrowdMember(m);
+  }, [home]);
 
   const play = (name: string) => {
     if (name === clip.current) return;
@@ -78,6 +89,10 @@ export function WanderNpc({
     const vz = (dz / d) * speed;
     g.position.x += vx * dt;
     g.position.z += vz * dt;
+    if (crowd.current) {
+      crowd.current.x = g.position.x;
+      crowd.current.z = g.position.z;
+    }
     g.rotation.y = lerpAngle(g.rotation.y, Math.atan2(-vx, -vz), 1 - Math.exp(-10 * dt));
     play(rig.clips.walk);
   });
