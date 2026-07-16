@@ -52,7 +52,7 @@ all pushed to GitHub):
 ## New requests (queued 2026-07-16, "can be after")
 - [x] **M9** — NPCs move: WanderNpc (stroll → pause → new target, walk/idle crossfade); 5 town pedestrians + interior NPC paces. Verified moving across frames.
 - [x] **M10** — Gamified UI scaffolding: HUD with Lv/XP strip + Menu/Roadmap/Goals/Challenges buttons + placeholder panels (verified in browser)
-- [ ] **M11** — Town polish: nicer streets + a central PLAZA landmark (fountain/statue) instead of a central house
+- [x] **M11** — Makeover: real kit fountain (Isa Lousberg CC0) with glowing animated water replaces the primitive one; tiled stone PATHS from the plaza to every house door (instanced); scattered rocks + grass tufts + flower clumps (Quaternius) for a lusher world; swaying foliage.
 - [ ] **M12** — (later) multiplayer with challenges
 
 ## Log

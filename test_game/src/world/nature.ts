@@ -25,5 +25,9 @@ export const GRASS_VARIANT: Variant = {
   url: K + 'grass.glb', names: ['Grass_Large_Extruded', 'Grass_Small'],
 };
 
+export const FLOWER_VARIANT: Variant = {
+  url: K + 'flowers.glb', names: ['Flower_1_Clump', 'Flower_2_Clump', 'Flower_3_Clump', 'Flower_4_Clump', 'Flower_5_Clump'],
+};
+
 // warm up the cache so foliage doesn't pop in
-[...TREE_VARIANTS, ...BUSH_VARIANTS, ROCK_VARIANT, GRASS_VARIANT].forEach((v) => useGLTF.preload(v.url));
+[...TREE_VARIANTS, ...BUSH_VARIANTS, ROCK_VARIANT, GRASS_VARIANT, FLOWER_VARIANT].forEach((v) => useGLTF.preload(v.url));
