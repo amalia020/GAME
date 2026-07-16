@@ -1,5 +1,6 @@
 import { InkCyl, InkSphere } from './Inked';
 import { Fountain } from './Fountain';
+import { TileDisc } from './Tiles';
 import { PALETTE } from '../render/toon';
 
 /**
@@ -9,9 +10,9 @@ import { PALETTE } from '../render/toon';
 export function Plaza({ position = [0, 0, -4] as [number, number, number] }: { position?: [number, number, number] }) {
   return (
     <group position={position}>
-      {/* round paved plaza slab */}
-      <InkCyl args={[6.4, 6.4, 0.12, 32]} color={PALETTE.road} position={[0, 0.04, 0]} outline={false} />
-      <InkCyl args={[6.7, 6.7, 0.18, 32]} color={PALETTE.concrete} position={[0, 0.02, 0]} outline={false} />
+      {/* cobbled circular plaza (tiled like the paths) + a stone curb */}
+      <InkCyl args={[7.0, 7.0, 0.16, 40]} color={PALETTE.concrete} position={[0, 0.02, 0]} outline={false} />
+      <TileDisc radius={6.8} />
 
       {/* the kit fountain (toon-shaded, glowing animated water) */}
       <Fountain position={[0, 0.1, 0]} scale={1.6} />
