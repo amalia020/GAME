@@ -7,6 +7,7 @@ import { GradientSky } from './render/GradientSky';
 import { FadeOverlay } from './ui/FadeOverlay';
 import { InteractionPrompt } from './ui/InteractionPrompt';
 import { DialogOverlay } from './ui/DialogOverlay';
+import { PromptPuzzle } from './ui/PromptPuzzle';
 import { Hud } from './ui/Hud';
 import { CameraPublisher, HouseLabels } from './ui/HouseLabels';
 import { useLocation } from './state/location';
@@ -76,6 +77,7 @@ export function InkWalk() {
     {loc.kind === 'town' && <HouseLabels />}
     <InteractionPrompt />
     <DialogOverlay />
+    <PromptPuzzle />
     <FadeOverlay />
     </>
   );

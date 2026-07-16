@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTalking, endTalk } from '../state/dialog';
 import { houseContent } from '../content/houses';
+import { openPuzzle } from '../state/puzzle';
 
 /**
  * DOM dialogue → tasks overlay. When talking to an NPC it shows the NPC's lines
@@ -56,15 +57,19 @@ export function DialogOverlay() {
         </div>
       ) : (
         <div style={panel}>
-          <div style={nameTag}>Tasks · {content.npcName}</div>
-          <ul style={{ margin: '10px 0 6px', paddingLeft: 18 }}>
+          <div style={nameTag}>Challenges · {content.npcName}</div>
+          <div style={{ margin: '10px 0 6px', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {content.tasks.map((t, i) => (
-              <li key={i} style={{ marginBottom: 10 }}>
-                <div style={{ fontWeight: 700 }}>{t.title}</div>
-                <div style={{ opacity: 0.85, fontSize: 14 }}>{t.body}</div>
-              </li>
+              <button
+                key={i}
+                style={taskRow}
+                onClick={() => { openPuzzle({ houseId: content.id, taskIndex: i, title: t.title }); endTalk(); }}
+              >
+                <div style={{ fontWeight: 700 }}>{t.title} <span style={{ color: '#f7b13e', fontSize: 12 }}>▸ play</span></div>
+                <div style={{ opacity: 0.8, fontSize: 13 }}>{t.body}</div>
+              </button>
             ))}
-          </ul>
+          </div>
           <button style={btn} onClick={endTalk}>Close (Esc)</button>
         </div>
       )}
@@ -91,4 +96,9 @@ const hint: React.CSSProperties = { fontSize: 12, opacity: 0.6, letterSpacing: 0
 const btn: React.CSSProperties = {
   marginTop: 6, padding: '8px 16px', borderRadius: 999, border: 'none',
   background: '#f7b13e', color: '#241a0a', fontWeight: 700, cursor: 'pointer',
+};
+const taskRow: React.CSSProperties = {
+  textAlign: 'left', padding: '10px 12px', borderRadius: 10,
+  background: 'rgba(20,18,14,0.5)', border: '1px solid rgba(247,236,216,0.1)',
+  color: '#f4ecd8', cursor: 'pointer', font: '400 15px/1.35 ui-sans-serif, system-ui, sans-serif',
 };
