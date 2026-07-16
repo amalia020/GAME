@@ -35,11 +35,12 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
 - Source: https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0
 - Use: the town's houses (1 main + 7 challenge) + streetlights and street props.
 
-## Fountain — Isa Lousberg "Tiny Treats"
-- File: `public/models/kits/props/fountain.glb`
-- Author: **Isa Lousberg** · License: **CC0**
-- Source: https://poly.pizza/m/WHc7dwttlk (Poly Pizza, no login)
-- Use: the central plaza fountain (toon-shaded; water mesh given a glowing pulse).
+## Fountain — Zsky  ⚠️ CC-BY (attribution required)
+- File: `public/models/kits/props/fountain_zsky.glb`
+- Author: **Zsky** · License: **CC-BY 4.0** (Creative Commons Attribution) — the ONE
+  non-CC0 asset; used with attribution, which this credit satisfies.
+- Source: https://poly.pizza/m/2guUSHGDPZ (Poly Pizza)
+- Use: the central plaza fountain (toon-shaded; procedural animated water pool added).
 
 ## Interior furniture — KayKit "Furniture Bits"
 - Files: `public/models/kits/interior/*.gltf` (+ `.bin`) + `furniturebits_texture.png`
@@ -67,5 +68,6 @@ _Last updated: 2026-07-16 (overnight facelift, milestone M1)._
   KayKit Mage. Both are unused and can be deleted in cleanup.
 
 ---
-**Summary:** all actively-used assets are CC0 by KayKit (Kay Lousberg) and Quaternius.
-The only non-CC0-verified file (`Soldier.glb`) is unused and slated for removal.
+**Summary:** almost all assets are **CC0** (KayKit / Kay Lousberg, Quaternius). The only
+**CC-BY** asset is the plaza fountain (`fountain_zsky.glb` by Zsky) — used with attribution
+above. `Soldier.glb` is unused three.js sample, licence-unverified, slated for removal.
