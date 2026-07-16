@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import * as THREE from 'three';
 import { makeToon, PALETTE } from '../render/toon';
 import { InkBox } from './Inked';
 import { Player } from '../player/Player';
@@ -37,29 +36,22 @@ const WALLS: Collider[] = [
 const WALL = '#e7dcc4'; // warm cream wall
 const FLOOR = '#c8a878'; // warm wood floor
 
-/** A canvas-textured exit doormat: "EXIT" + an arrow pointing out (toward the front). */
-function makeMatTexture(accent: string): THREE.CanvasTexture {
-  const W = 256, H = 200;
-  const c = document.createElement('canvas');
-  c.width = W; c.height = H;
-  const ctx = c.getContext('2d')!;
-  ctx.fillStyle = '#5b4a30';
-  ctx.beginPath();
-  const r = 16;
-  ctx.moveTo(r, 4); ctx.arcTo(W - 4, 4, W - 4, H - 4, r); ctx.arcTo(W - 4, H - 4, 4, H - 4, r);
-  ctx.arcTo(4, H - 4, 4, 4, r); ctx.arcTo(4, 4, W - 4, 4, r); ctx.fill();
-  ctx.lineWidth = 8; ctx.strokeStyle = accent; ctx.stroke();
-  // EXIT text
-  ctx.fillStyle = '#f4ecd8'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.font = '800 44px ui-sans-serif, system-ui, sans-serif';
-  ctx.fillText('EXIT', W / 2, 58);
-  // downward chevron arrow (points toward the door / camera)
-  ctx.strokeStyle = accent; ctx.lineWidth = 16; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(W / 2 - 40, 108); ctx.lineTo(W / 2, 150); ctx.lineTo(W / 2 + 40, 108); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W / 2 - 40, 138); ctx.lineTo(W / 2, 180); ctx.lineTo(W / 2 + 40, 138); ctx.stroke();
-  const tex = new THREE.CanvasTexture(c);
-  tex.needsUpdate = true;
-  return tex;
+/** A small, subtle in-style exit doormat: a woven mat + a soft glowing accent
+ *  chevron pointing out (toward the door). Matches the house's toon look. */
+function ExitMat({ z, accent }: { z: number; accent: string }) {
+  return (
+    <group position={[0, 0, z]}>
+      {/* woven mat */}
+      <InkBox args={[1.5, 0.06, 1.0]} color="#7a5c3d" position={[0, 0.03, 0]} />
+      {/* two soft glowing chevrons pointing +Z (out toward the door / the viewer) */}
+      {[-0.16, 0.12].map((cz, i) => (
+        <group key={i} position={[0, 0.07, cz]}>
+          <InkBox args={[0.42, 0.04, 0.11]} color={accent} glow={0.85} position={[-0.13, 0, 0]} rotation={[0, -Math.PI / 4, 0]} />
+          <InkBox args={[0.42, 0.04, 0.11]} color={accent} glow={0.85} position={[0.13, 0, 0]} rotation={[0, Math.PI / 4, 0]} />
+        </group>
+      ))}
+    </group>
+  );
 }
 
 /** One wall with a skirting board at the base + a wood trim rail. */
@@ -82,7 +74,6 @@ export function InteriorScene({ houseId }: { houseId?: string }) {
   const ceilMat = useMemo(() => makeToon({ color: '#d8ccb2' }), []);
   const content = houseContent(houseId);
   const accent = content.accent;
-  const matTex = useMemo(() => makeMatTexture(accent), [accent]);
   const npc = content.npcRig;
   const NPC_POS: [number, number, number] = [2.4, 0, -3.2];
 
@@ -133,11 +124,8 @@ export function InteriorScene({ houseId }: { houseId?: string }) {
       <Furniture item="shelf_A_big" position={[R - 0.35, 1.6, -2.5]} yaw={-Math.PI / 2} />
       <Furniture item="pictureframe_large_A" position={[0, 2.2, -R + 0.26]} />
 
-      {/* exit doormat (arrow toward the door) in the visible foreground */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 1.4]}>
-        <planeGeometry args={[2.4, 1.8]} />
-        <meshBasicMaterial map={matTex} transparent toneMapped={false} />
-      </mesh>
+      {/* subtle in-style exit doormat in the foreground */}
+      <ExitMat z={1.6} accent={accent} />
 
       {/* the resident NPC — gently pacing near the couch */}
       <WanderNpc rig={npc} home={NPC_POS} radius={1.4} speed={0.9} />
