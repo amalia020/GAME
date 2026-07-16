@@ -8,6 +8,7 @@ import { FadeOverlay } from './ui/FadeOverlay';
 import { InteractionPrompt } from './ui/InteractionPrompt';
 import { DialogOverlay } from './ui/DialogOverlay';
 import { Hud } from './ui/Hud';
+import { CameraPublisher, HouseLabels } from './ui/HouseLabels';
 import { useLocation } from './state/location';
 import { HOUSES, houseDoor } from './world/townData';
 
@@ -68,9 +69,11 @@ export function InkWalk() {
         )}
       </Suspense>
 
+      <CameraPublisher />
       <InkEffects />
     </Canvas>
     <Hud />
+    {loc.kind === 'town' && <HouseLabels />}
     <InteractionPrompt />
     <DialogOverlay />
     <FadeOverlay />

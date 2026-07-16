@@ -2,6 +2,11 @@ import { GltfModel } from './GltfModel';
 
 export type BuildingModel = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H';
 
+/** native model heights (Blender units) — used to float the name sign above the roof. */
+export const BUILDING_NATIVE_H: Record<BuildingModel, number> = {
+  A: 1.65, B: 1.65, C: 2.98, D: 2.97, E: 2.35, F: 2.35, G: 2.98, H: 3.05,
+};
+
 const URL: Record<BuildingModel, string> = {
   A: '/models/kits/buildings/building_A.gltf',
   B: '/models/kits/buildings/building_B.gltf',
