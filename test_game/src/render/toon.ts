@@ -107,7 +107,7 @@ export const PALETTE = {
   green: '#4f9d5a', // mid foliage (also building-tint key, reused for leaves)
   // ground
   grass: '#6fae64', // lush grass
-  road: '#bcb4a2', // warm stone path
+  road: '#dcc7a0', // warm pale sand — the walkways + plaza (see SandRoad.tsx)
   // foliage layers
   leafDeep: '#2e7d46',
   leaf: '#4f9d5a',

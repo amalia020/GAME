@@ -1,54 +1,22 @@
 import { useMemo } from 'react';
 import * as THREE from 'three';
 import { makeToon, PALETTE } from '../render/toon';
+import { canvas2d, makeOverlay, rnd, texFrom, wrapBlob } from './groundTex';
 import { InkCyl } from './Inked';
 
 /**
  * The walkable ground: a big subdivided plane (so the curve shader can bend it
- * smoothly) in grass green, a grey road strip through it, and a few distant
- * curved hills filling the horizon. Ground/hills carry no ink outline — only
- * discrete props do — which sidesteps outline drift on the curved far field.
+ * smoothly) in grass green, and a few distant curved hills filling the horizon.
+ * Ground/hills carry no ink outline — only discrete props do — which sidesteps
+ * outline drift on the curved far field.
  *
  * The lawn is built from THREE stacked layers (painterly, like hand-painted
  * ground in Ghibli-ish indie games) rather than one flat green:
  *   0.000  base      — grass green × a fine blade/tonal multiply map
  *   0.008  meadow    — big soft darker/lighter patches, so the field has shape
  *   0.016  flecks    — sparse clover + wildflower specks for close-up interest
- * All three sit BELOW the stone paths (y = 0.03) so paths always win.
+ * The sandy road (<SandRoad>) stacks on top of these at 0.024+.
  */
-
-/** deterministic 0..1 hash — keeps every layer stable across reloads. */
-const rnd = (n: number) => {
-  const x = Math.sin(n * 91.7) * 43758.5453;
-  return x - Math.floor(x);
-};
-
-/** Draw a blob 9x (offset by ±S) so it wraps seamlessly across tile edges. */
-function wrapBlob(ctx: CanvasRenderingContext2D, S: number, x: number, y: number, r: number) {
-  for (const ox of [-S, 0, S]) {
-    for (const oy of [-S, 0, S]) {
-      ctx.beginPath();
-      ctx.arc(x + ox, y + oy, r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-}
-
-function canvas2d(S: number): [HTMLCanvasElement, CanvasRenderingContext2D] {
-  const c = document.createElement('canvas');
-  c.width = S;
-  c.height = S;
-  return [c, c.getContext('2d')!];
-}
-
-function texFrom(c: HTMLCanvasElement, repeat: number): THREE.CanvasTexture {
-  const tex = new THREE.CanvasTexture(c);
-  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-  tex.repeat.set(repeat, repeat);
-  tex.anisotropy = 4;
-  tex.needsUpdate = true;
-  return tex;
-}
 
 /** LAYER 1 — fine detail: near-white base so it MULTIPLIES the grass colour,
  *  adding tonal mottle + blade strokes without washing the green out. */
@@ -131,19 +99,6 @@ function makeFleckTexture(): THREE.CanvasTexture {
   return texFrom(c, 26); // ~9 world units per tile
 }
 
-/** A transparent decal layer floating just over the base lawn. */
-function makeOverlay(map: THREE.CanvasTexture, order: number, opacity = 1): THREE.MeshToonMaterial {
-  const m = makeToon({ color: '#ffffff' }); // the map carries its own colour
-  m.map = map;
-  m.transparent = true;
-  m.opacity = opacity;
-  m.depthWrite = false; // stack cleanly without fighting each other
-  m.polygonOffset = true;
-  m.polygonOffsetFactor = -order;
-  m.polygonOffsetUnits = -order;
-  return m;
-}
-
 export function Ground() {
   const grass = useMemo(() => {
     const m = makeToon({ color: PALETTE.grass }); // the map multiplies over this green
@@ -155,8 +110,9 @@ export function Ground() {
 
   return (
     <group>
-      {/* grass — high segment count for a smooth horizon bend. Walkways are now the
-          tiled stone <Paths> from the plaza to each house (see TownScene). */}
+      {/* grass — high segment count for a smooth horizon bend. NOTE: 240/100 = 2.4
+          units per segment; <SandRoad> must align to that grid or the curve shader
+          tears the two surfaces apart at distance. */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} material={grass} receiveShadow>
         <planeGeometry args={[240, 240, 100, 100]} />
       </mesh>

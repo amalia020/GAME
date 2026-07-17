@@ -1,20 +1,19 @@
 import { InkCyl, InkSphere } from './Inked';
 import { Fountain } from './Fountain';
-import { TileDisc } from './Tiles';
 import { PALETTE } from '../render/toon';
 
 /**
- * The central plaza landmark — a real kit fountain on a round paved base. Gives
- * the town a lively focal point (instead of a central house).
+ * The central plaza landmark — a real kit fountain standing on the open sand.
+ * Gives the town a lively focal point (instead of a central house). The plaza
+ * SURFACE itself is painted by <SandRoad>, which treats it as one continuous
+ * shape with the walkways so there's no seam where a road meets the square.
  */
 export function Plaza({ position = [0, 0, -4] as [number, number, number] }: { position?: [number, number, number] }) {
   return (
     <group position={position}>
-      {/* cobbled circular plaza — mortar disc + clipped pavers + curb (self-contained) */}
-      <TileDisc radius={6.8} />
-
-      {/* the kit fountain (toon-shaded, glowing animated water) */}
-      <Fountain position={[0, 0.1, 0]} scale={1.6} />
+      {/* the kit fountain (toon-shaded, glowing animated water). Sits at y=0: the
+          old 0.1 lift existed only to clear the tiles' mortar slab. */}
+      <Fountain position={[0, 0, 0]} scale={1.6} />
 
       {/* planters ringing the fountain */}
       {[0, 1, 2, 3].map((i) => {
